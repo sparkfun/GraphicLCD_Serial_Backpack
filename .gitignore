@@ -1,0 +1,12 @@
+*.eep
+*.elf
+*.d
+*.o
+*.srec
+*.lst
+*.lss
+*.sym
+Firmware/OldFirmwareReference/
+*.map
+*.b#?
+*.s#?
