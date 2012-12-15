@@ -7,14 +7,15 @@
 #include "serial.h"
 #include "glcdbp.h"
 #include "t6963.h"
+#include "ks0107b.h"
 
 uint8_t BL_dutycycle = 100;
 
 enum DISPLAY_TYPE display = SMALL;
 volatile uint8_t 	rxRingBuffer[416];
-volatile uint16_t 	rxRingHead = 0;
-volatile uint16_t	rxRingTail = 0;
 volatile uint16_t	bufferSize = 0;
+uint16_t 			rxRingHead = 0;
+uint16_t			rxRingTail = 0;
 
 int main(void)
 {
@@ -22,8 +23,15 @@ int main(void)
 	ioInit();
 	timerInit();
 	putChar('!');
+	sei();
 	while(1)
 	{
+		while (bufferSize > 0)
+		{
+			bufferSize--;
+			if (rxRingTail == 416) rxRingTail = 0;
+			putChar(rxRingBuffer[rxRingTail++]);
+		}
 	}
 }
 

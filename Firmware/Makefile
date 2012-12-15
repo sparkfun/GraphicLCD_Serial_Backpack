@@ -64,6 +64,7 @@ SRC = 	glcdbp.c
 SRC +=  t6963.c
 SRC +=  serial.c
 SRC +=  interrupts.c
+SRC +=  ks0107b.c
 		
 
 
@@ -201,7 +202,8 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 #
 # Type: avrdude -c ?
 # to get a full listing.
-AVRDUDE_PROGRAMMER = avrispmkii
+#AVRDUDE_PROGRAMMER = avrispmkii
+AVRDUDE_PROGRAMMER = jtag2isp
 #AVRDUDE_PROGRAMMER = ponyser
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
@@ -210,9 +212,9 @@ AVRDUDE_PORT = usb
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
-AVRDUDE_WRITE_EFUSE = -U efuse:w::m
-AVRDUDE_WRITE_HFUSE = -U hfuse:w::m
-AVRDUDE_WRITE_LFUSE = -U lfuse:w::m
+AVRDUDE_WRITE_EFUSE = -U efuse:w:0x01:m
+AVRDUDE_WRITE_HFUSE = -U hfuse:w:0xdf:m
+AVRDUDE_WRITE_LFUSE = -U lfuse:w:0xee:m
 
 AVRDUDE_PART = m168
 # Uncomment the following if you want avrdude's erase cycle counter.
@@ -229,7 +231,7 @@ AVRDUDE_PART = m168
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_FLAGS = -p $(AVRDUDE_PART) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_FLAGS = -p $(AVRDUDE_PART) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -B 10
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
