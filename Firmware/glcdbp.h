@@ -8,11 +8,10 @@
 #define SPLASH 2
 #define REV 3
 
-const int BACKLIGHT_VALUE 	= 0;
-
 typedef enum DISPLAY_TYPE {SMALL, LARGE} DISPLAY_TYPE;
 
 void ioInit(void);
 void timerInit(void);
+void LATrigger(void);
 
 #endif

@@ -1,4 +1,4 @@
-#include <avr/pgmspace.h> 
+#include <avr/pgmspace.h>
 #include <avr/io.h>
 #include <math.h>
 #include <avr/interrupt.h>
@@ -7,7 +7,7 @@
 #include "serial.h"
 #include "glcdbp.h"
 #include "t6963.h"
-#include "ks0107b.h"
+#include "ks0108b.h"
 
 uint8_t BL_dutycycle = 100;
 
@@ -24,6 +24,21 @@ int main(void)
 	timerInit();
 	putChar('!');
 	sei();
+	ks0108bReset();
+	ks0108bBusyWait();
+	ks0108bSetColumn(25);
+	ks0108bSetPage(0);
+	ks0108bSetStartLine();
+	ks0108bWriteData(0b01010101);
+	ks0108bWriteData(0b01010101);
+	ks0108bWriteData(0b01010101);
+	ks0108bWriteData(0b01010101);
+	ks0108bWriteData(0b01010101);
+	ks0108bWriteData(0b01010101);
+	ks0108bWriteData(0b01010101);
+	ks0108bWriteData(0b01010101);
+	ks0108bWriteData(0b01010101);
+	putHex(ks0108bReadStatus());
 	while(1)
 	{
 		while (bufferSize > 0)
@@ -39,11 +54,10 @@ void ioInit(void)
 {
 	// Set up the data direction registers for the data bus pins.
 	//  The data bus is on PB0:1 and PD2:7, so make those pins outputs.
-	DDRB = 0b00000011;
+	DDRB = 0b00001111;
 	DDRD = 0b11111100;
-	
-	DDRB |= (1<<nBL_EN);		// Set PB2 (backlight enable) as an output
-	//PORTB |= (1<<nBL_EN);		// Turn backlight off
+
+	PORTB &= ~(1<<nBL_EN);		// Turn backlight on
 	
 	// Now we need to configure the I/O to support the two types of display.
 	if (display == SMALL)
@@ -100,4 +114,10 @@ void timerInit(void)
 	//  value stored in EEPROM, so we need to retrieve it.
 	OCR1B = 25;//eeprom_read_word(BACKLIGHT_VALUE);
 	
+}
+
+void LATrigger(void)
+{
+	PORTB |= 0x08;
+	PORTB &= ~(0x08);
 }

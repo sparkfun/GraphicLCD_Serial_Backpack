@@ -12,5 +12,6 @@ enum {
 
 void serialInit(uint16_t baudRate);
 void putChar(uint8_t TXData);
+void putHex(uint8_t TXData);
 
 #endif
