@@ -28,21 +28,8 @@ int main(void)
 	ks0108bReset();
 	ks0108bDisplayOn();
 	ks0108bClear();
-	ks0108bWriteData(0x11);
-	ks0108bWriteData(0x22);
-	ks0108bWriteData(0x33);
-	ks0108bWriteData(0x44);
-	ks0108bWriteData(0x55);
-	ks0108bWriteData(0x66);
-	ks0108bWriteData(0x77);
-	ks0108bWriteData(0x88);
-	ks0108bSetColumn(0);
-	ks0108bReadData();
-	for (uint8_t i = 0; i<8; i++)
-	{
-		putHex(ks0108bReadData());
-		putChar('\n');
-	}
+	for (uint8_t i = 0; i<30; i++) 
+		ks0108bDrawPixel(i, i, ON);
 	while(1)
 	{
 		while (bufferSize > 0)

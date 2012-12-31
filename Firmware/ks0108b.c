@@ -5,6 +5,7 @@
 #include "lcd.h"
 
 #define E_DELAY 5
+uint8_t column = 0;
 
 void ks0108bReset(void)
 {
@@ -16,23 +17,6 @@ void ks0108bReset(void)
 
 void ks0108bBusyWait(void)
 {
-	DDRB &= ~(0x03);
-	DDRD &= ~(0xFC);
-	PORTC &= ~(	(1<<CS1)|
-				(1<<RS) |
-				(1<<EN));
-	_delay_us(E_DELAY);
-	PORTC |= (1<<EN);
-	_delay_us(E_DELAY);
-	while ((PIND & 0x90) != 0)
-	{
-	}
-	PORTC &= ~((1<<EN));
-	_delay_us(E_DELAY);
-	PORTC |= (	(1<<CS1)|
-				(1<<RS)|
-				(1<<EN));
-	_delay_us(E_DELAY);
 }
 
 // Write a data byte to the controller. Data lines 7:2 are connected to pins
@@ -40,11 +24,18 @@ void ks0108bBusyWait(void)
 void ks0108bWriteData(uint8_t data)
 {
 	lcdSetData(data);
-	PORTC &= ~( (1<<R_W)|
-				(1<<CS1));
+	if (column++ > 63) 	PORTC &= ~( (1<<CS2) );
+	else 			 	PORTC &= ~( (1<<CS1) );
+	PORTC &= ~( (1<<R_W));
 	strobeEN();
 	PORTC |=  ( (1<<R_W)|
-				(1<<CS1));
+				(1<<CS1)|
+				(1<<CS2));
+	if (column > 127) 
+	{
+		column = 0;
+		ks0108bSetColumn(0);
+	}
 }
 
 uint8_t ks0108bReadData(void)
@@ -62,17 +53,14 @@ uint8_t ks0108bReadData(void)
 
 void ks0108bSetColumn(uint8_t address)
 {	
-	PORTC &= ~( (1<<CS1)|
-				(1<<R_W)|
+	PORTC &= ~( (1<<R_W)|
 				(1<<RS));
-				
 	// For Y writes, bits 7:6 of the data bus should be set to 01. We should
 	//  just make sure that's done before we do anything else...
 	address = (address | 0x40) & 0x7F;
 	lcdSetData(address);
 	strobeEN();
-	PORTC |=  ( (1<<CS1)|
-				(1<<R_W)|
+	PORTC |=  ( (1<<R_W)|
 				(1<<RS));
 }
 
@@ -117,7 +105,6 @@ void ks0108bDisplayOn(void)
 
 void ks0108bDisplayOff(void)
 {
-
 }
 
 void ks0108bSetStartLine(void)
@@ -136,13 +123,25 @@ void ks0108bSetStartLine(void)
 				(1<<CS2));
 }
 
+void ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
+{
+	ks0108bSetColumn(x);
+	ks0108bSetPage(y/8);
+	uint8_t currentPixelData = ks0108bReadData();
+	uint8_t pixelToWrite = (y%8);
+	if (pixel == ON) currentPixelData |= (1<<pixelToWrite);
+	else			   currentPixelData &= ~(1<<pixelToWrite);
+	ks0108bSetColumn(x);
+	ks0108bWriteData(currentPixelData);
+}
+
 void ks0108bClear(void)
 {
 	for (uint8_t y = 0; y<8; y++)
 	{
 		ks0108bSetPage(y);
 		ks0108bSetColumn(0);
-		for (uint8_t x = 0; x<64; x++)
+		for (uint8_t x = 0; x<128; x++)
 		{
 			ks0108bWriteData(0);
 		}

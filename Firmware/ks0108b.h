@@ -8,6 +8,9 @@
 #define CS1 		4	// PC4
 #define CS2 		5	// PC5
 
+typedef enum SCREEN_SIDE {LEFT, RIGHT, BOTH} SCREEN_SIDE;
+typedef enum PIX_VAL {ON, OFF} PIX_VAL;
+
 void 		ks0108bWriteData(uint8_t data);
 uint8_t 	ks0108bReadData(void);
 void 		ks0108bSetColumn(uint8_t address);
@@ -19,6 +22,7 @@ void 		ks0108bBusyWait(void);
 void		ks0108bSetStartLine(void);
 void		strobeEN(void);
 void 		ks0108bClear(void);
+void 		ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
 
 #endif
 
