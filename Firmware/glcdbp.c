@@ -23,22 +23,26 @@ int main(void)
 	ioInit();
 	timerInit();
 	putChar('!');
+	putChar('\n');
 	sei();
 	ks0108bReset();
-	ks0108bBusyWait();
-	ks0108bSetColumn(25);
-	ks0108bSetPage(0);
-	ks0108bSetStartLine();
-	ks0108bWriteData(0b01010101);
-	ks0108bWriteData(0b01010101);
-	ks0108bWriteData(0b01010101);
-	ks0108bWriteData(0b01010101);
-	ks0108bWriteData(0b01010101);
-	ks0108bWriteData(0b01010101);
-	ks0108bWriteData(0b01010101);
-	ks0108bWriteData(0b01010101);
-	ks0108bWriteData(0b01010101);
-	putHex(ks0108bReadStatus());
+	ks0108bDisplayOn();
+	ks0108bClear();
+	ks0108bWriteData(0x11);
+	ks0108bWriteData(0x22);
+	ks0108bWriteData(0x33);
+	ks0108bWriteData(0x44);
+	ks0108bWriteData(0x55);
+	ks0108bWriteData(0x66);
+	ks0108bWriteData(0x77);
+	ks0108bWriteData(0x88);
+	ks0108bSetColumn(0);
+	ks0108bReadData();
+	for (uint8_t i = 0; i<8; i++)
+	{
+		putHex(ks0108bReadData());
+		putChar('\n');
+	}
 	while(1)
 	{
 		while (bufferSize > 0)
@@ -60,16 +64,16 @@ void ioInit(void)
 	PORTB &= ~(1<<nBL_EN);		// Turn backlight on
 	
 	// Now we need to configure the I/O to support the two types of display.
-	if (display == SMALL)
+	//if (display == SMALL)
 	{
 		DDRC =  ((1<<EN) | (1<<RS) | (1<<R_W) | (1<<RESET) | (1<<CS1) | (1<<CS2));
 		PORTC = ((1<<EN) | (1<<RS) | (1<<R_W) | (1<<RESET) | (1<<CS1) | (1<<CS2));
 	}
-	else if (display == LARGE)
+	/*else if (display == LARGE)
 	{
 		DDRC =  ((1<<WR) | (1<<RD) | (1<<CE) | (1<<CD) | (1<<HALT) | (1<<RST));
 		PORTC = ((1<<WR) | (1<<RD) | (1<<CE) | (1<<CD) | (1<<HALT) | (1<<RST));
-	}
+	}*/
 }
 
 void timerInit(void)

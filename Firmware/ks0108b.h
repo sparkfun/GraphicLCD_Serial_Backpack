@@ -17,6 +17,8 @@ void		ks0108bDisplayOn(void);
 void 		ks0108bReset(void);
 void 		ks0108bBusyWait(void);
 void		ks0108bSetStartLine(void);
+void		strobeEN(void);
+void 		ks0108bClear(void);
 
 #endif
 
