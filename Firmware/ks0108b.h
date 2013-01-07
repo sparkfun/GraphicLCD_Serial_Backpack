@@ -1,13 +1,6 @@
 #ifndef __ks0108b_h
 #define __ks0108b_h
 
-#define EN 			0	// PC0
-#define RS 			1	// PC1
-#define R_W 		2	// PC2
-#define RESET 		3	// PC3
-#define CS1 		4	// PC4
-#define CS2 		5	// PC5
-
 typedef enum SCREEN_SIDE {LEFT, RIGHT, BOTH} SCREEN_SIDE;
 
 void 		ks0108bWriteData(uint8_t data);

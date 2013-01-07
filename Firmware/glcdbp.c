@@ -5,6 +5,7 @@
 #include <avr/eeprom.h>
 #include <util/delay.h>
 #include "glcdbp.h"
+#include "io_support.h"
 #include "serial.h"
 #include "lcd.h"
 #include "ks0108b.h"
@@ -26,9 +27,16 @@ int main(void)
 	putChar('!');
 	putChar('\n');
 	sei();
-	/*for (uint8_t i = 0; i<30; i++) 
-		lcdDrawPixel(i, 2*i, ON);*/
-	lcdDrawLine(0,0,1,30);
+	for (uint8_t i = 0; i<63; i++)
+	{
+		ks0108bWriteData(i);
+	}
+	ks0108bSetColumn(0);
+	for (uint8_t i = 0; i<63; i++)
+	{
+		putDec(ks0108bReadData());
+		putChar('\n');
+	}
 	while(1)
 	{
 		while (bufferSize > 0)
@@ -38,28 +46,6 @@ int main(void)
 			putChar(rxRingBuffer[rxRingTail++]);
 		}
 	}
-}
-
-void ioInit(void)
-{
-	// Set up the data direction registers for the data bus pins.
-	//  The data bus is on PB0:1 and PD2:7, so make those pins outputs.
-	DDRB = 0b00001111;
-	DDRD = 0b11111100;
-
-	PORTB &= ~(1<<nBL_EN);		// Turn backlight on
-	
-	// Now we need to configure the I/O to support the two types of display.
-	//if (display == SMALL)
-	{
-		DDRC =  ((1<<EN) | (1<<RS) | (1<<R_W) | (1<<RESET) | (1<<CS1) | (1<<CS2));
-		PORTC = ((1<<EN) | (1<<RS) | (1<<R_W) | (1<<RESET) | (1<<CS1) | (1<<CS2));
-	}
-	/*else if (display == LARGE)
-	{
-		DDRC =  ((1<<WR) | (1<<RD) | (1<<CE) | (1<<CD) | (1<<HALT) | (1<<RST));
-		PORTC = ((1<<WR) | (1<<RD) | (1<<CE) | (1<<CD) | (1<<HALT) | (1<<RST));
-	}*/
 }
 
 void timerInit(void)

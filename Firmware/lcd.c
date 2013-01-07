@@ -2,6 +2,7 @@
 #include "glcdbp.h"
 #include "ks0108b.h"
 #include "lcd.h"
+#include "serial.h"
 
 extern enum DISPLAY_TYPE display;
 
@@ -12,32 +13,10 @@ void lcdConfig(void)
 	ks0108bClear();
 }
 
-void lcdSetData(uint8_t data)
+void lcdClearScreen(void)
 {
-	DDRB |= 0x03;
-	DDRD |= 0xFC;
-	
-	PORTB &= 0xFC;					// Clear PB7:2 in preparation for data.
-	PORTD &= 0x03;					// Clear PD1:0.
-	
-	PORTB |= (data & 0x03);			// Mask off PB1:0 so we don't change them
-									//  and then write the other 6 bits.
-	PORTD |= (data & 0xFC);			// Mask off PD7:2 so we don't change them
-									//	and then write the other two bits.
-									//  The data is now in place.
+	ks0108bClear();
 }
-
-uint8_t lcdReadData(void)
-{
-	DDRB &= ~(0x03);
-	DDRD &= ~(0xFC);
-	
-	uint8_t data = (PINB & 0x03);
-	data |= (PIND & 0xFC);
-	
-	return data;
-}
-
 
  // Draws a line between two points p1(p1x,p1y) and p2(p2x,p2y).
  // This function is based on the Bresenham's line algorithm and is highly 
@@ -52,9 +31,9 @@ uint8_t lcdReadData(void)
  //	 (http://www.codekeep.net/snippets/e39b2d9e-0843-4405-8e31-44e212ca1c45.aspx)
  //	 by Woon Khang Tang on 1/29/2009.
  
-void lcdDrawLine(uint8_t p1x, uint8_t p1y, uint8_t p2x, uint8_t p2y)
+void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
 {
-    uint8_t F, x, y;
+    int16_t F, x, y;
 
     if (p1x > p2x)  // Swap points if p1 is on the right of p2
     {
@@ -101,12 +80,12 @@ void lcdDrawLine(uint8_t p1x, uint8_t p1y, uint8_t p2x, uint8_t p2y)
     }
 
 
-    uint8_t dy            = p2y - p1y;  // y-increment from p1 to p2
-    uint8_t dx            = p2x - p1x;  // x-increment from p1 to p2
-    uint8_t dy2           = (dy << 1);  // dy << 1 == 2*dy
-    uint8_t dx2           = (dx << 1);
-    uint8_t dy2_minus_dx2 = dy2 - dx2;  // precompute constant for speed up
-    uint8_t dy2_plus_dx2  = dy2 + dx2;
+    int16_t dy            = p2y - p1y;  // y-increment from p1 to p2
+    int16_t dx            = p2x - p1x;  // x-increment from p1 to p2
+    int16_t dy2           = (dy << 1);  // dy << 1 == 2*dy
+    int16_t dx2           = (dx << 1);
+    int16_t dy2_minus_dx2 = dy2 - dx2;  // precompute constant for speed up
+    int16_t dy2_plus_dx2  = dy2 + dx2;
 
 
     if (dy >= 0)    // m >= 0
@@ -144,6 +123,10 @@ void lcdDrawLine(uint8_t p1x, uint8_t p1y, uint8_t p2x, uint8_t p2y)
             while (y <= p2y)
             {
                 lcdDrawPixel(x, y, ON);
+				putDec(x);
+				putChar(' ');
+				putDec(y);
+				putChar('\n');
                 if (F <= 0)
                 {
                     F += dx2;

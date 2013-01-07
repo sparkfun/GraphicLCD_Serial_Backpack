@@ -35,3 +35,23 @@ void putHex(uint8_t TXData)
 	else hexChars[0] += ('A'-10);
 	putChar(hexChars[0]);
 }
+
+void putDec(uint8_t TXData)
+{
+	uint8_t ones = TXData % 10;
+	TXData -= ones;
+	uint8_t tens = (TXData % 100)/10;
+	uint8_t huns = TXData / 100;
+	putChar((huns) + '0');
+	putChar((tens) + '0');
+	putChar((ones) + '0');
+}
+
+void putLine(uint8_t *TXData)
+{
+	while (*TXData != '\0')
+	{
+		putChar(*(TXData++));
+	}
+	putChar('\n');
+}

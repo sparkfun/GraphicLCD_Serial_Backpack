@@ -2,9 +2,8 @@
 #define __lcd_h
 
 void		lcdConfig(void);
-void 		lcdSetData(uint8_t data);
-uint8_t 	lcdReadData(void);
+void		lcdClearScreen();
 void 		lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
-void 		lcdDrawLine(uint8_t p1x, uint8_t p1y, uint8_t p2x, uint8_t p2y);
+void 		lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y);
 
 #endif
