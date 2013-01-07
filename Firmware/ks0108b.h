@@ -9,7 +9,6 @@
 #define CS2 		5	// PC5
 
 typedef enum SCREEN_SIDE {LEFT, RIGHT, BOTH} SCREEN_SIDE;
-typedef enum PIX_VAL {ON, OFF} PIX_VAL;
 
 void 		ks0108bWriteData(uint8_t data);
 uint8_t 	ks0108bReadData(void);

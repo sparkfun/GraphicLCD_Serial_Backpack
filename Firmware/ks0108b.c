@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include "ks0108b.h"
 #include "glcdbp.h"
+#include "ks0108b.h"
 #include "lcd.h"
 
 #define E_DELAY 5

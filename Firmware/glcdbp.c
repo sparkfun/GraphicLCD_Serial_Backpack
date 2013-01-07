@@ -29,7 +29,7 @@ int main(void)
 	ks0108bDisplayOn();
 	ks0108bClear();
 	for (uint8_t i = 0; i<30; i++) 
-		ks0108bDrawPixel(i, i, ON);
+		lcdDrawPixel(i, i, ON);
 	while(1)
 	{
 		while (bufferSize > 0)

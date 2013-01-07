@@ -1,5 +1,8 @@
 #include<avr/io.h>
+#include "glcdbp.h"
 #include "lcd.h"
+
+extern enum DISPLAY_TYPE display;
 
 void lcdSetData(uint8_t data)
 {
@@ -25,4 +28,12 @@ uint8_t lcdReadData(void)
 	data |= (PIND & 0xFC);
 	
 	return data;
+}
+
+void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
+{
+	if (display == SMALL)
+	{
+		ks0108bDrawPixel(x, y, pixel);
+	}
 }
