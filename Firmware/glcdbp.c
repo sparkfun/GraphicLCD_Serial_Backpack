@@ -22,11 +22,13 @@ int main(void)
 	serialInit(BR115200);
 	ioInit();
 	timerInit();
+	lcdConfig();
 	putChar('!');
 	putChar('\n');
 	sei();
-	for (uint8_t i = 0; i<30; i++) 
-		lcdDrawPixel(i, i, ON);
+	/*for (uint8_t i = 0; i<30; i++) 
+		lcdDrawPixel(i, 2*i, ON);*/
+	lcdDrawLine(0,0,1,30);
 	while(1)
 	{
 		while (bufferSize > 0)
