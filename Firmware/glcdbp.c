@@ -4,9 +4,9 @@
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
-#include "serial.h"
 #include "glcdbp.h"
-#include "t6963.h"
+#include "serial.h"
+#include "lcd.h"
 #include "ks0108b.h"
 
 uint8_t BL_dutycycle = 100;
@@ -25,9 +25,6 @@ int main(void)
 	putChar('!');
 	putChar('\n');
 	sei();
-	ks0108bReset();
-	ks0108bDisplayOn();
-	ks0108bClear();
 	for (uint8_t i = 0; i<30; i++) 
 		lcdDrawPixel(i, i, ON);
 	while(1)

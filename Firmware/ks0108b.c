@@ -1,8 +1,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "glcdbp.h"
-#include "ks0108b.h"
 #include "lcd.h"
+#include "ks0108b.h"
 
 #define E_DELAY 5
 uint8_t column = 0;
