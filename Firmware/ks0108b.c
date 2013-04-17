@@ -125,22 +125,34 @@ void ks0108bReadBlock(uint8_t address, uint8_t blockSize, uint8_t *buffer)
 				(1<<EN));
 }
 
-uint8_t ks0108bReadData(void)
+uint8_t ks0108bReadData(uint8_t x)
 {	
 	uint8_t data;
-	PORTC &= ~( (1<<CS1)|
-				(1<<EN));
+	
+	if (x<64) 
+	{	
+		PORTC &= ~( (1<<CS1)|
+					(1<<EN) );
+	}
+	else
+	{	
+		PORTC &= ~( (1<<CS2)|
+					(1<<EN) );
+	}
 	_delay_us(R_DELAY);
-	PORTC |= ((1<<CS1)|
-			  (1<<EN));	
+	PORTC |= (1<<EN);	
 	_delay_us(R_DELAY);
-	PORTC &= ~( (1<<CS1)|
-				(1<<EN));
+	PORTC &= ~(1<<EN);
 	_delay_us(R_DELAY);
-	PORTC |= ((1<<CS1)|
-			  (1<<EN));	
+	PORTC |= (1<<EN);	
 	_delay_us(R_DELAY);
 	data = readData();	
+	PORTC &= ~(1<<EN);
+	_delay_us(R_DELAY);
+	PORTC |= ( (1<<CS1)|
+			   (1<<CS2)|
+			   (1<<EN) );	
+	_delay_us(R_DELAY);
 	return data;
 }
 
@@ -221,8 +233,7 @@ void ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 {
 	ks0108bSetColumn(x);
 	ks0108bSetPage(y/8);
-	uint8_t currentPixelData = ks0108bReadData();
-	putDec(currentPixelData);
+	uint8_t currentPixelData = ks0108bReadData(x);
 	uint8_t pixelToWrite = (y%8);
 	if (pixel == ON) currentPixelData |= (1<<pixelToWrite);
 	else			 currentPixelData &= ~(1<<pixelToWrite);

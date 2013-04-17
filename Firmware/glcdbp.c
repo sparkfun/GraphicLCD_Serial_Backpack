@@ -29,11 +29,13 @@ int main(void)
 	putChar('\r');
 	_delay_ms(350);
 	sei();
-	//for (uint8_t i = 0; i<128; i++)
+	putChar('\n');
+	putChar('\r');
+	for (uint8_t i = 0; i<128; i++)
 	{
-		lcdDrawLine(0,0,1,63);
-		//_delay_ms(30000);
-		//lcdClearScreen();
+		lcdDrawLine(i,0,i,63);
+		_delay_ms(300);
+		lcdClearScreen();
 	}
 	/*ks0108bSetColumn(0);
 	for (uint8_t i = 0; i<32; i++)

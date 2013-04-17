@@ -126,11 +126,6 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
             while (y <= p2y)
             {
                 lcdDrawPixel(x, y, ON);
-				putDec(x);
-				putChar(' ');
-				putDec(y);
-				putChar('\r');
-				putChar('\n');
                 if (F <= 0)
                 {
                     F += dx2;
@@ -196,10 +191,40 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
     }
 }
 
+/*void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r)
+{
+  int x = radius, y = 0;
+  int xChange = 1 - (radius << 1);
+  int yChange = 0;
+  int radiusError = 0;
+ 
+  while(x >= y)
+  {
+    lcdDrawPixel(x + x0, y + y0);
+    lcdDrawPixel(y + x0, x + y0);
+    lcdDrawPixel(-x + x0, y + y0);
+    lcdDrawPixel(-y + x0, x + y0);
+    lcdDrawPixel(-x + x0, -y + y0);
+    lcdDrawPixel(-y + x0, -x + y0);
+    lcdDrawPixel(x + x0, -y + y0);
+    lcdDrawPixel(y + x0, -x + y0);
+ 
+    y++;
+    radiusError += yChange;
+    yChange += 2;
+    if(((radiusError << 1) + xChange) > 0)
+    {
+      x--;
+      radiusError += xChange;
+      xChange += 2;
+    }
+  }
+}*/
+
 void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 {
 	if (display == SMALL)
 	{
-		ks0108bDrawPixel(x, y, pixel);
+		if (x<128 && y<64) ks0108bDrawPixel(x, y, pixel);
 	}
 }

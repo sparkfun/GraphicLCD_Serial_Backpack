@@ -47,7 +47,15 @@ void putDec(uint8_t TXData)
 	putChar((ones) + '0');
 }
 
-
+void putBin(uint8_t TXData)
+{
+	for (char i = 0; i < 8; i++)
+	{
+		if ((TXData & 0x01) == 0x01) putChar('1');
+		else putChar('0');
+		TXData = TXData>>1;
+	}
+}
 
 void putLine(uint8_t *TXData)
 {
