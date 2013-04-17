@@ -47,6 +47,8 @@ void putDec(uint8_t TXData)
 	putChar((ones) + '0');
 }
 
+
+
 void putLine(uint8_t *TXData)
 {
 	while (*TXData != '\0')
@@ -54,4 +56,5 @@ void putLine(uint8_t *TXData)
 		putChar(*(TXData++));
 	}
 	putChar('\n');
+	putChar('\r');
 }

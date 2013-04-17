@@ -14,6 +14,7 @@ void serialInit(uint16_t baudRate);
 void putChar(uint8_t TXData);
 void putHex(uint8_t TXData);
 void putDec(uint8_t TXData);
+void putBin(uint8_t TXData);
 void putLine(uint8_t *TXData);
 
 #endif

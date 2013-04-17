@@ -26,17 +26,27 @@ int main(void)
 	lcdConfig();
 	putChar('!');
 	putChar('\n');
+	putChar('\r');
+	_delay_ms(350);
 	sei();
-	for (uint8_t i = 0; i<63; i++)
+	//for (uint8_t i = 0; i<128; i++)
+	{
+		lcdDrawLine(0,0,1,63);
+		//_delay_ms(30000);
+		//lcdClearScreen();
+	}
+	/*ks0108bSetColumn(0);
+	for (uint8_t i = 0; i<32; i++)
 	{
 		ks0108bWriteData(i);
 	}
-	ks0108bSetColumn(0);
-	for (uint8_t i = 0; i<63; i++)
+	uint8_t dataBuffer[32];
+	ks0108bReadBlock(0, 32, dataBuffer);
+	for (uint8_t i = 0; i<32; i++)
 	{
-		putDec(ks0108bReadData());
+		putDec(dataBuffer[i]);
 		putChar('\n');
-	}
+	}*/
 	while(1)
 	{
 		while (bufferSize > 0)
@@ -92,8 +102,4 @@ void timerInit(void)
 	
 }
 
-void LATrigger(void)
-{
-	PORTB |= 0x08;
-	PORTB &= ~(0x08);
-}
+

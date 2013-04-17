@@ -6,6 +6,5 @@ typedef enum PIX_VAL {ON, OFF} PIX_VAL;
 
 void ioInit(void);
 void timerInit(void);
-void LATrigger(void);
 
 #endif

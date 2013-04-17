@@ -23,6 +23,12 @@ void ioInit(void)
 	}*/
 }
 
+void LATrigger(void)
+{
+	PORTB |= 0x08;
+	PORTB &= ~(0x08);
+}
+
 void setData(uint8_t data)
 {
 	DDRB |= 0x03;

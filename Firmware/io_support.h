@@ -18,5 +18,6 @@
 void 		ioInit(void);
 void 		setData(uint8_t data);
 uint8_t 	readData(void);
+void 		LATrigger(void);
 
 #endif

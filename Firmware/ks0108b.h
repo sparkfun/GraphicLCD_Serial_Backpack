@@ -4,6 +4,8 @@
 typedef enum SCREEN_SIDE {LEFT, RIGHT, BOTH} SCREEN_SIDE;
 
 void 		ks0108bWriteData(uint8_t data);
+void 		ks0108bReadBlock(uint8_t address, uint8_t blockSize, uint8_t *buffer);
+void 		ks0108bReadSet(uint8_t address);
 uint8_t 	ks0108bReadData(void);
 void 		ks0108bSetColumn(uint8_t address);
 void 		ks0108bSetPage(uint8_t address);
