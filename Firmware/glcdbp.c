@@ -31,10 +31,10 @@ int main(void)
 	sei();
 	putChar('\n');
 	putChar('\r');
-	for (uint8_t i = 0; i<64; i++)
+	for (uint8_t i = 0; i<32; i++)
 	{
 		
-		lcdDrawCircle(63, 32, i);
+		lcdDrawBox(64-i, 32-i, 64+i, 32+i);
 		_delay_ms(100);
 		lcdClearScreen();
 	}

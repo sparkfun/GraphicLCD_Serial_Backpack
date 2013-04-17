@@ -221,6 +221,14 @@ void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r)
   }
 }
 
+void lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
+{
+	lcdDrawLine(p1x, p1y, p1x, p2y);
+	lcdDrawLine(p1x, p1y, p2x, p1y);
+	lcdDrawLine(p2x, p2y, p1x, p2y);
+	lcdDrawLine(p2x, p2y, p2x, p1y);
+}
+
 void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 {
 	if (display == SMALL)
