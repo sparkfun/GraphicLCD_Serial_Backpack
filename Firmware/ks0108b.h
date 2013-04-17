@@ -17,6 +17,7 @@ void		ks0108bSetStartLine(void);
 void		strobeEN(void);
 void 		ks0108bClear(void);
 void 		ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
+void		ks0108bDrawColumn(uint8_t x, uint8_t y, uint8_t colVal);
 void		delay(void);
 
 #endif

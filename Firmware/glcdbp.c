@@ -31,24 +31,25 @@ int main(void)
 	sei();
 	putChar('\n');
 	putChar('\r');
-	for (uint8_t i = 0; i<32; i++)
+	lcdDrawChar('H');
+	lcdDrawChar('e');
+	lcdDrawChar('l');
+	lcdDrawChar('l');
+	lcdDrawChar('o');
+	lcdDrawChar(',');
+	lcdDrawChar(' ');
+	lcdDrawChar('w');
+	lcdDrawChar('o');
+	lcdDrawChar('r');
+	lcdDrawChar('l');
+	lcdDrawChar('d');
+	lcdDrawChar('!');
+	/*for (uint8_t i = 0; i<32; i++)
 	{
 		
 		lcdDrawBox(64-i, 32-i, 64+i, 32+i);
 		_delay_ms(100);
 		lcdClearScreen();
-	}
-	/*ks0108bSetColumn(0);
-	for (uint8_t i = 0; i<32; i++)
-	{
-		ks0108bWriteData(i);
-	}
-	uint8_t dataBuffer[32];
-	ks0108bReadBlock(0, 32, dataBuffer);
-	for (uint8_t i = 0; i<32; i++)
-	{
-		putDec(dataBuffer[i]);
-		putChar('\n');
 	}*/
 	while(1)
 	{

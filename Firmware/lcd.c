@@ -6,6 +6,8 @@
 
 extern enum DISPLAY_TYPE display;
 
+uint8_t cursorPos[] = {0,0};
+
 void lcdConfig(void)
 {
 	ks0108bReset();
@@ -227,6 +229,35 @@ void lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
 	lcdDrawLine(p1x, p1y, p2x, p1y);
 	lcdDrawLine(p2x, p2y, p1x, p2y);
 	lcdDrawLine(p2x, p2y, p2x, p1y);
+}
+
+void lcdDrawChar(char printMe)
+{
+	if (printMe >= ' ' && printMe <= '~')
+	{
+		uint16_t charOffset = printMe - ' ';
+		putDec(charOffset);
+		charOffset=5*charOffset;
+		putDec(charOffset);
+		for (uint8_t i = 0; i<5; i++)
+		{
+			uint8_t colTemp = pgm_read_byte(&characterArray[charOffset+i]);
+			lcdDrawColumn(cursorPos[0]*6 + i, cursorPos[1], colTemp);
+		}
+		if (++cursorPos[0]>21)
+		{
+			cursorPos[0] = 0;
+			if (++cursorPos[1]>7) cursorPos[1] = 0;
+		}
+	}	
+}
+
+void lcdDrawColumn(uint8_t x, uint8_t y, uint8_t colVal)
+{
+	if (display == SMALL)
+	{
+		if (x<128) ks0108bDrawColumn(x, y, colVal);
+	}
 }
 
 void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)

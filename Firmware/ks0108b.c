@@ -241,6 +241,13 @@ void ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 	ks0108bWriteData(currentPixelData);
 }
 
+void ks0108bDrawColumn(uint8_t x, uint8_t y, uint8_t colVal)
+{
+	ks0108bSetColumn(x);
+	ks0108bSetPage(y);
+	ks0108bWriteData(colVal);
+}
+
 void ks0108bClear(void)
 {
 	for (uint8_t y = 0; y<8; y++)
