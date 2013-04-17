@@ -191,23 +191,23 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
     }
 }
 
-/*void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r)
+void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r)
 {
-  int x = radius, y = 0;
-  int xChange = 1 - (radius << 1);
+  int x = r, y = 0;
+  int xChange = 1 - (r << 1);
   int yChange = 0;
   int radiusError = 0;
  
   while(x >= y)
   {
-    lcdDrawPixel(x + x0, y + y0);
-    lcdDrawPixel(y + x0, x + y0);
-    lcdDrawPixel(-x + x0, y + y0);
-    lcdDrawPixel(-y + x0, x + y0);
-    lcdDrawPixel(-x + x0, -y + y0);
-    lcdDrawPixel(-y + x0, -x + y0);
-    lcdDrawPixel(x + x0, -y + y0);
-    lcdDrawPixel(y + x0, -x + y0);
+    lcdDrawPixel(x + x0, y + y0, ON);
+    lcdDrawPixel(y + x0, x + y0, ON);
+    lcdDrawPixel(-x + x0, y + y0, ON);
+    lcdDrawPixel(-y + x0, x + y0, ON);
+    lcdDrawPixel(-x + x0, -y + y0, ON);
+    lcdDrawPixel(-y + x0, -x + y0, ON);
+    lcdDrawPixel(x + x0, -y + y0, ON);
+    lcdDrawPixel(y + x0, -x + y0, ON);
  
     y++;
     radiusError += yChange;
@@ -219,7 +219,7 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
       xChange += 2;
     }
   }
-}*/
+}
 
 void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 {

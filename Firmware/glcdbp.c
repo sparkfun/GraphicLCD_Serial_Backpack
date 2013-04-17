@@ -31,10 +31,11 @@ int main(void)
 	sei();
 	putChar('\n');
 	putChar('\r');
-	for (uint8_t i = 0; i<128; i++)
+	for (uint8_t i = 0; i<64; i++)
 	{
-		lcdDrawLine(i,0,i,63);
-		_delay_ms(300);
+		
+		lcdDrawCircle(63, 32, i);
+		_delay_ms(100);
 		lcdClearScreen();
 	}
 	/*ks0108bSetColumn(0);
