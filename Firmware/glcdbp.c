@@ -1,6 +1,6 @@
-#include <avr/pgmspace.h>
-#include <avr/io.h>
-#include <math.h>
+//#include <avr/pgmspace.h>
+//#include <avr/io.h>
+//#include <math.h>
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
@@ -8,7 +8,8 @@
 #include "io_support.h"
 #include "serial.h"
 #include "lcd.h"
-#include "ks0108b.h"
+//#include "ks0108b.h"
+#include "ui.h"
 
 uint8_t BL_dutycycle = 100;
 
@@ -24,12 +25,9 @@ int main(void)
 	ioInit();
 	timerInit();
 	lcdConfig();
-	putChar('!');
-	putChar('\n');
-	putChar('\r');
-	_delay_ms(350);
+  putLine("Ready to serve!");
 	sei();
-	putChar('\n');
+	/*putChar('\n');
 	putChar('\r');
 	lcdDrawChar('H');
 	lcdDrawChar('e');
@@ -44,10 +42,11 @@ int main(void)
 	lcdDrawChar('l');
 	lcdDrawChar('d');
 	lcdDrawChar('!');
-	/*for (uint8_t i = 0; i<32; i++)
+	lcdClearScreen();
+	for (uint8_t i = 0; i<32; i++)
 	{
 		
-		lcdDrawBox(64-i, 32-i, 64+i, 32+i);
+		lcdDrawCircle(64, 32, i);
 		_delay_ms(100);
 		lcdClearScreen();
 	}*/
@@ -55,9 +54,9 @@ int main(void)
 	{
 		while (bufferSize > 0)
 		{
-			bufferSize--;
-			if (rxRingTail == 416) rxRingTail = 0;
-			putChar(rxRingBuffer[rxRingTail++]);
+			char bufferChar = serialBufferPop();
+      if (bufferChar < ' ') uiStateMachine(bufferChar);
+      else lcdDrawChar(bufferChar);
 		}
 	}
 }

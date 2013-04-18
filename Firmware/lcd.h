@@ -2,6 +2,7 @@
 #define __lcd_h
 
 #include <avr/pgmspace.h> 
+#include "glcdbp.h"
 
 void		lcdConfig(void);
 void		lcdClearScreen(void);

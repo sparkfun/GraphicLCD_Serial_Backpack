@@ -1,7 +1,7 @@
 #include<avr/io.h>
-#include "glcdbp.h"
-#include "ks0108b.h"
+#include <avr/pgmspace.h> 
 #include "lcd.h"
+#include "ks0108b.h"
 #include "serial.h"
 
 extern enum DISPLAY_TYPE display;
@@ -95,7 +95,6 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
         // Case 1: 0 <= m <= 1 (Original case)
         if (dy <= dx)   
         {
-			putChar('1');
 		
             F = dy2 - dx;    // initial F
 
@@ -120,7 +119,6 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
         // replace all dy by dx and dx by dy)
         else
         {
-			putChar('2');
             F = dx2 - dy;    // initial F
 
             y = p1y;
@@ -146,7 +144,6 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
         // Case 3: -1 <= m < 0 (Mirror about x-axis, replace all dy by -dy)
         if (dx >= -dy)
         {
-			putChar('3');
             F = -dy2 - dx;    // initial F
 
             x = p1x;
@@ -170,7 +167,6 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
         // about y=x line, replace all dx by -dy and dy by dx)
         else    
         {
-			putChar('4');
             F = dx2 + dy;    // initial F
 
             y = p1y;
@@ -236,9 +232,7 @@ void lcdDrawChar(char printMe)
 	if (printMe >= ' ' && printMe <= '~')
 	{
 		uint16_t charOffset = printMe - ' ';
-		putDec(charOffset);
 		charOffset=5*charOffset;
-		putDec(charOffset);
 		for (uint8_t i = 0; i<5; i++)
 		{
 			uint8_t colTemp = pgm_read_byte(&characterArray[charOffset+i]);
