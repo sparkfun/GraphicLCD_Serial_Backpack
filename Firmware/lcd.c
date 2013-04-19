@@ -246,6 +246,23 @@ void lcdDrawChar(char printMe)
 	}	
 }
 
+void lcdDrawLogo(void)
+{
+  if (display == SMALL)
+  {
+    for (uint8_t i = 0; i<10; i++)
+    {
+      uint8_t colTemp = pgm_read_byte(&logoArray[i]);
+      lcdDrawColumn(54+i, 3, colTemp);
+    }
+    for (uint8_t i = 10; i<20; i++)
+    {
+      uint8_t colTemp = pgm_read_byte(&logoArray[i]);
+      lcdDrawColumn(44+i, 4, colTemp);
+    }
+  }
+}
+
 void lcdDrawColumn(uint8_t x, uint8_t y, uint8_t colVal)
 {
 	if (display == SMALL)

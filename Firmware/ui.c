@@ -184,6 +184,7 @@ void uiStateMachine(char command)
     case ERASE_BLOCK:
     
     break;
+    
     default:
     break;
   }

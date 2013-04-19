@@ -6,6 +6,7 @@
 *.lst
 *.lss
 *.sym
+Firmware/OldFWPristine/
 Firmware/OldFirmwareReference/
 Firmware/ArduinoLib/
 Firmware/SummoningDark/

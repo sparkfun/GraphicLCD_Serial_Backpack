@@ -20,6 +20,7 @@ int main(void)
 	timerInit();
 	serialInit(BR115200);
 	sei();
+  lcdDrawLogo();
   _delay_ms(1000);
   if (bufferSize == 0)
   {
