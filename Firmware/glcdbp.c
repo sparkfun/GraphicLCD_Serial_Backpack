@@ -10,8 +10,9 @@
 enum DISPLAY_TYPE   display = SMALL;
 volatile uint8_t 	  rxRingBuffer[416];
 volatile uint16_t	  bufferSize = 0;
-uint16_t            rxRingHead = 0;
-uint16_t            rxRingTail = 0;
+volatile uint16_t   rxRingHead = 0;
+volatile uint16_t   rxRingTail = 0;
+uint8_t             reverse = 0;
 
 int main(void)
 {
@@ -20,6 +21,8 @@ int main(void)
 	timerInit();
 	serialInit(BR115200);
 	sei();
+  reverse = 0x01 & getReverse();
+  lcdClearScreen();
   if ((getSplash() & 0x01)==1) lcdDrawLogo();
   _delay_ms(1000);
   if (bufferSize == 0)

@@ -19,6 +19,8 @@
 							
 uint8_t column = 0;			// We want to be able to track the current
 							//  x position sometimes; it allows 
+              
+extern uint8_t reverse;
 
 // ks0108bReset()- pretty self explanatory, but I'm not really sure what
 //  the point of twiddling the reset line is, as it doesn't seem to really
@@ -235,8 +237,16 @@ void ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 	ks0108bSetPage(y/8);
 	uint8_t currentPixelData = ks0108bReadData(x);
 	uint8_t pixelToWrite = (y%8);
-	if (pixel == ON) currentPixelData |= (1<<pixelToWrite);
-	else			 currentPixelData &= ~(1<<pixelToWrite);
+  if (reverse == 0)
+  {
+    if (pixel == ON) currentPixelData |= (1<<pixelToWrite);
+    else			 currentPixelData &= ~(1<<pixelToWrite);
+  }
+  else
+  {
+    if (pixel == OFF) currentPixelData |= (1<<pixelToWrite);
+    else			 currentPixelData &= ~(1<<pixelToWrite);
+  }
 	ks0108bSetColumn(x);
 	ks0108bWriteData(currentPixelData);
 }
@@ -245,18 +255,21 @@ void ks0108bDrawColumn(uint8_t x, uint8_t y, uint8_t colVal)
 {
 	ks0108bSetColumn(x);
 	ks0108bSetPage(y);
+  if (reverse == 1) colVal =~ colVal;
 	ks0108bWriteData(colVal);
 }
 
 void ks0108bClear(void)
 {
+  uint8_t clearVal = 0;
+  if (reverse == 1) clearVal = 0xFF;
 	for (uint8_t y = 0; y<8; y++)
 	{
 		ks0108bSetPage(y);
 		ks0108bSetColumn(0);
 		for (uint8_t x = 0; x<128; x++)
 		{
-			ks0108bWriteData(0);
+			ks0108bWriteData(clearVal);
 		}
 	}
 	ks0108bSetPage(0);

@@ -11,6 +11,7 @@ extern volatile uint8_t 	rxRingBuffer[416];
 extern volatile uint16_t 	rxRingHead;
 extern volatile uint16_t	rxRingTail;
 extern volatile uint16_t	bufferSize;
+extern          uint8_t   reverse;
 
 void uiStateMachine(char command)
 {
@@ -28,7 +29,9 @@ void uiStateMachine(char command)
     break;
     
     case TOGGLE_BGND:
-    // to be implemented
+      reverse = ~reverse;
+      toggleReverse();
+      lcdClearScreen();
     break;
     
     case TOGGLE_SPLASH:

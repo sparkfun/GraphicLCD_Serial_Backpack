@@ -15,7 +15,7 @@ uint8_t getSplash(void)
 
 void toggleReverse(void)
 {
-  uint8_t temp = eeprom_read_byte((const uint8_t *)REVERSE);
+  uint8_t temp = 0x01 & eeprom_read_byte((const uint8_t *)REVERSE);
   temp ^= 0x01;
   eeprom_write_byte((uint8_t *)REVERSE, temp);
 }
