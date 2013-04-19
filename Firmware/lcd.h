@@ -13,6 +13,7 @@ void		lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel);
 void		lcdDrawChar(char printMe);
 void 		lcdDrawColumn(uint8_t x, uint8_t y, uint8_t colVal);
 void    lcdDrawLogo(void);
+void    lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 
 // Sprite maps for characters. Lifted from the original glcd code, which in turn
 //   lifted them from something called "Sinister 7". I don't know what that is.

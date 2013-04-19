@@ -246,6 +246,36 @@ void lcdDrawChar(char printMe)
 	}	
 }
 
+void lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
+{
+  // We want to go from upper left to lower right- if some degenerate user
+  //   thinks to be cute, we want to make sure that our points are redefined
+  //   so that (x0,y0) is the upper left, and (x1,y1) is lower right.
+  if (x1<x0)
+  {
+    uint8_t xTemp = x0;
+    x0 = x1;
+    x1 = xTemp;
+  }
+  if (y1<y0)
+  {
+    uint8_t yTemp = y0;
+    y0 = y1;
+    y1 = yTemp;
+  }
+  // Now that we've got that settled, we'll start at point (x0,y0) and just
+  //   use the lcdPixelDraw() function to turn off each pixel in the block.
+  //   We'll do this by defining points (i,j), iterating across in x, then
+  //   down y.
+  for (uint8_t j = y0; j <= y1; j++)
+  {
+    for (uint8_t i = x0; i <= x1; i++)
+    {
+      lcdDrawPixel(i,j,OFF);
+    }
+  }
+}
+
 void lcdDrawLogo(void)
 {
   if (display == SMALL)
