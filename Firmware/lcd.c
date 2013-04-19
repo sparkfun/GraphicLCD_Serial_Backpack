@@ -246,6 +246,8 @@ void lcdDrawChar(char printMe)
 	}	
 }
 
+// This function has room for lots of improvement. We draw over the block to
+//   be erased pixel by pixel, but we *could* do it column by column. 
 void lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 {
   // We want to go from upper left to lower right- if some degenerate user

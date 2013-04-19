@@ -181,8 +181,21 @@ void uiStateMachine(char command)
     
     break;
     
-    case ERASE_BLOCK:
-    
+    case ERASE_BLOCK:    
+    while(1)  // Stay here until we are *told* to leave.
+      {
+        if (bufferSize > 0)
+        {
+          cmdBuffer[cmdBufferPtr++] = serialBufferPop();
+        }
+        if (cmdBufferPtr > 3)
+        {
+          cmdBufferPtr = 0;
+          lcdEraseBlock(cmdBuffer[0], cmdBuffer[1], // start point x,y
+                        cmdBuffer[2], cmdBuffer[3]); // end point x,y
+          break; // This is where we tell to code to leave the while loop.
+        }
+      }
     break;
     
     default:
