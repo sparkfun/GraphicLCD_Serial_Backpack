@@ -69,6 +69,10 @@
 #define  DRAW_BOX       0x0f
 #define  ERASE_BLOCK    0x05
 
+#define  BL_LEVEL OCR1B // Just an alias, to make it more obvious what
+                        //  we're doing when we write OCR1B is setting the
+                        //  backlight level.
+
 void      uiStateMachine(char command);
 
 #endif

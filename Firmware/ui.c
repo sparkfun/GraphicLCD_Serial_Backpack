@@ -2,6 +2,7 @@
 #include "lcd.h"
 #include "serial.h"
 #include "glcdbp.h"
+#include "nvm.h"
 
 // These variables are defined in glcdbp.c, and are used for the input buffer
 //   from the serial port. We need to be able to access them here because we'll
@@ -35,7 +36,23 @@ void uiStateMachine(char command)
     break;
     
     case ADJ_BL_LEVEL:
-    // to be implemented
+      while(1)  // Stay here until we are *told* to leave.
+      {
+        if (bufferSize > 0)
+        {
+          cmdBuffer[cmdBufferPtr++] = serialBufferPop();
+        }
+        if (cmdBufferPtr > 0)
+        {
+          cmdBufferPtr = 0;
+          // We need to make sure our level never exceeds 100, or weird
+          //   things can happen to the PWM generator.
+          if ((uint8_t)cmdBuffer[0] > 100) cmdBuffer[0] = 100;
+          BL_LEVEL = cmdBuffer[0];
+          setBacklightLevel(cmdBuffer[0]);
+          break; // This is where we tell to code to leave the while loop.
+        }
+      }
     break;
     
     case ADJ_BAUD_RATE:
@@ -107,7 +124,23 @@ void uiStateMachine(char command)
     
     break;
     
-    case DRAW_BOX:
+    case DRAW_BOX:    
+    while(1)  // Stay here until we are *told* to leave.
+      {
+        if (bufferSize > 0)
+        {
+          cmdBuffer[cmdBufferPtr++] = serialBufferPop();
+        }
+        if (cmdBufferPtr > 4)
+        {
+          cmdBufferPtr = 0;
+          if (cmdBuffer[4] == 0) pixel == OFF;
+          lcdDrawBox(cmdBuffer[0], cmdBuffer[1], // start point x,y
+                     cmdBuffer[2], cmdBuffer[3], // end point x,y
+                     pixel);                     // draw or erase?
+          break; // This is where we tell to code to leave the while loop.
+        }
+      }
     
     break;
     

@@ -68,6 +68,7 @@ SRC +=  ks0108b.c
 SRC +=  lcd.c
 SRC +=  io_support.c
 SRC +=  ui.c
+SRC +=  nvm.c
 		
 
 

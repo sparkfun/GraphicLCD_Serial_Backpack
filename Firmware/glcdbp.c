@@ -1,14 +1,9 @@
-//#include <avr/pgmspace.h>
-//#include <avr/io.h>
-//#include <math.h>
 #include <avr/interrupt.h>
-#include <avr/eeprom.h>
 #include <util/delay.h>
 #include "glcdbp.h"
 #include "io_support.h"
 #include "serial.h"
 #include "lcd.h"
-//#include "ks0108b.h"
 #include "ui.h"
 
 uint8_t BL_dutycycle = 100;
@@ -25,39 +20,17 @@ int main(void)
 	ioInit();
 	timerInit();
 	lcdConfig();
-  putLine("Ready to serve!");
+  putLine((char*)"Ready to serve!");
 	sei();
-	/*putChar('\n');
-	putChar('\r');
-	lcdDrawChar('H');
-	lcdDrawChar('e');
-	lcdDrawChar('l');
-	lcdDrawChar('l');
-	lcdDrawChar('o');
-	lcdDrawChar(',');
-	lcdDrawChar(' ');
-	lcdDrawChar('w');
-	lcdDrawChar('o');
-	lcdDrawChar('r');
-	lcdDrawChar('l');
-	lcdDrawChar('d');
-	lcdDrawChar('!');
-	lcdClearScreen();
-	for (uint8_t i = 0; i<32; i++)
-	{
-		
-		lcdDrawCircle(64, 32, i);
-		_delay_ms(100);
-		lcdClearScreen();
-	}*/
 	while(1)
 	{
 		while (bufferSize > 0)
 		{
 			char bufferChar = serialBufferPop();
-      if (bufferChar < ' ' && bufferChar <= '~') uiStateMachine(bufferChar);
-      else lcdDrawChar(bufferChar);
-      bufferChar = 0xff;
+      if (bufferChar < ' ')
+        uiStateMachine(bufferChar);
+      else if ((bufferChar >= ' ') && (bufferChar <= '~'))
+        lcdDrawChar(bufferChar);
 		}
 	}
 }
