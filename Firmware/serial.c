@@ -78,6 +78,7 @@ void putLine(uint8_t *TXData)
 char serialBufferPop(void)
 {
   bufferSize--;
+  char retVal = rxRingBuffer[rxRingTail++];
   if (rxRingTail == 416) rxRingTail = 0;
-  return rxRingBuffer[rxRingTail++];
+  return retVal;
 }

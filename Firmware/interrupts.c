@@ -1,5 +1,6 @@
 #include <AVR/interrupt.h>
 #include "serial.h"
+
 extern volatile uint8_t 	rxRingBuffer[416];
 extern volatile uint16_t 	rxRingHead;
 extern volatile uint16_t	rxRingTail;

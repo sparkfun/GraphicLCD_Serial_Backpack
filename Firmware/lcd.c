@@ -33,7 +33,7 @@ void lcdClearScreen(void)
  //	 (http://www.codekeep.net/snippets/e39b2d9e-0843-4405-8e31-44e212ca1c45.aspx)
  //	 by Woon Khang Tang on 1/29/2009.
  
-void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
+void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel)
 {
     int16_t F, x, y;
 
@@ -189,7 +189,7 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
     }
 }
 
-void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r)
+void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r, PIX_VAL pixel)
 {
   int x = r, y = 0;
   int xChange = 1 - (r << 1);
@@ -219,12 +219,12 @@ void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r)
   }
 }
 
-void lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y)
+void lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel)
 {
-	lcdDrawLine(p1x, p1y, p1x, p2y);
-	lcdDrawLine(p1x, p1y, p2x, p1y);
-	lcdDrawLine(p2x, p2y, p1x, p2y);
-	lcdDrawLine(p2x, p2y, p2x, p1y);
+	lcdDrawLine(p1x, p1y, p1x, p2y, pixel);
+	lcdDrawLine(p1x, p1y, p2x, p1y, pixel);
+	lcdDrawLine(p2x, p2y, p1x, p2y, pixel);
+	lcdDrawLine(p2x, p2y, p2x, p1y, pixel);
 }
 
 void lcdDrawChar(char printMe)

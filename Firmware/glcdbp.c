@@ -55,8 +55,9 @@ int main(void)
 		while (bufferSize > 0)
 		{
 			char bufferChar = serialBufferPop();
-      if (bufferChar < ' ') uiStateMachine(bufferChar);
+      if (bufferChar < ' ' && bufferChar <= '~') uiStateMachine(bufferChar);
       else lcdDrawChar(bufferChar);
+      bufferChar = 0xff;
 		}
 	}
 }
