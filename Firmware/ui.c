@@ -56,7 +56,44 @@ void uiStateMachine(char command)
     break;
     
     case ADJ_BAUD_RATE:
-    // to be implemented
+      while(1)  // Stay here until we are *told* to leave.
+      {
+        if (bufferSize > 0)
+        {
+          cmdBuffer[cmdBufferPtr++] = serialBufferPop();
+        }
+        if (cmdBufferPtr > 0)
+        {
+          cmdBufferPtr = 0;
+          setBaudRate(cmdBuffer[0]); // This will reject invalid settings,
+                                     //   which is to say, anything outside
+                                     //   of the range ASCII 1-6.
+          switch(cmdBuffer[0])
+          {
+            case '1':
+            serialInit(BR4800);
+            break;
+            case '2':
+            serialInit(BR9600);
+            break;
+            case '3':
+            serialInit(BR19200);
+            break;
+            case '4':
+            serialInit(BR38400);
+            break;
+            case '5':
+            serialInit(BR57600);
+            break;
+            case '6':
+            serialInit(BR115200);
+            break;
+            default:
+            break;
+          }
+          break; // This is where we tell to code to leave the while loop.
+        }
+      }
     break;
     
     case ADJ_TEXT_X:

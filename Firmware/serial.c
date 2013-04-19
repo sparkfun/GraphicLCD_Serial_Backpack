@@ -82,3 +82,10 @@ char serialBufferPop(void)
   if (rxRingTail == 416) rxRingTail = 0;
   return retVal;
 }
+
+void clearBuffer(void)
+{
+  bufferSize = 0;
+  rxRingTail = 0;
+  rxRingHead = 0;
+}

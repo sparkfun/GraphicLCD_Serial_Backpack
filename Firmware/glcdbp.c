@@ -5,23 +5,53 @@
 #include "serial.h"
 #include "lcd.h"
 #include "ui.h"
+#include "nvm.h"
 
-uint8_t BL_dutycycle = 100;
-
-enum DISPLAY_TYPE display = SMALL;
-volatile uint8_t 	rxRingBuffer[416];
-volatile uint16_t	bufferSize = 0;
-uint16_t 			rxRingHead = 0;
-uint16_t			rxRingTail = 0;
+enum DISPLAY_TYPE   display = SMALL;
+volatile uint8_t 	  rxRingBuffer[416];
+volatile uint16_t	  bufferSize = 0;
+uint16_t            rxRingHead = 0;
+uint16_t            rxRingTail = 0;
 
 int main(void)
 {
-	serialInit(BR115200);
 	ioInit();
-	timerInit();
 	lcdConfig();
-  putLine((char*)"Ready to serve!");
+	timerInit();
+	serialInit(BR115200);
 	sei();
+  _delay_ms(1000);
+  if (bufferSize == 0)
+  {
+    switch(getBaudRate())
+    {
+      case '1':
+      serialInit(BR4800);
+      break;
+      case '2':
+      serialInit(BR9600);
+      break;
+      case '3':
+      serialInit(BR19200);
+      break;
+      case '4':
+      serialInit(BR38400);
+      break;
+      case '5':
+      serialInit(BR57600);
+      break;
+      case '6':
+      serialInit(BR115200);
+      break;
+      default:
+      break;
+    }
+  }
+  else setBaudRate('6');
+  
+  clearBuffer();
+  
+  putLine((char*)"Ready to serve!");
 	while(1)
 	{
 		while (bufferSize > 0)
@@ -75,8 +105,7 @@ void timerInit(void)
 	//	the value in this register is the point where the output pin will
 	//  transition from low to high, turning the backlight off. We have a
 	//  value stored in EEPROM, so we need to retrieve it.
-	OCR1B = 25;//eeprom_read_word(BACKLIGHT_VALUE);
-	
+	OCR1B = getBacklightLevel();
 }
 
 

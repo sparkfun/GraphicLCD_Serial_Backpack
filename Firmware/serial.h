@@ -17,5 +17,6 @@ void putDec(uint8_t TXData);
 void putBin(uint8_t TXData);
 void putLine(uint8_t *TXData);
 char serialBufferPop(void);
+void clearBuffer(void);
 
 #endif

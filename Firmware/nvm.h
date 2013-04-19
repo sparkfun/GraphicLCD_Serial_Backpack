@@ -1,6 +1,7 @@
 #ifndef __nvm_h
 #define __nvm_h
 
+// EEPROM addresses for storing these settings.
 #define SPLASH     0x00
 #define REVERSE    0x01
 #define BAUDRATE   0x02
