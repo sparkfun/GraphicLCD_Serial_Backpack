@@ -15,6 +15,8 @@ void 		lcdDrawColumn(uint8_t x, uint8_t y, uint8_t colVal);
 
 // Sprite maps for characters. Lifted from the original glcd code, which in turn
 //   lifted them from something called "Sinister 7". I don't know what that is.
+//   What I *do* know is that the original codes were upside-down, and I had
+//   to write a python script to reverse the bit order of these bitmaps.
 static char characterArray[475] PROGMEM = {
 	0x00,0x00,0x00,0x00,0x00,/*space*/
 	0x00,0x6f,0x6f,0x00,0x00,/*!*/

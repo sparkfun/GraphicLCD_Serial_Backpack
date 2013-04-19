@@ -62,7 +62,7 @@ void uiStateMachine(char command)
           cmdBufferPtr = 0;
           if (cmdBuffer[2] == 0) pixel == OFF;
           lcdDrawPixel(cmdBuffer[0], cmdBuffer[1], pixel);
-          break;
+          break; // This is where we tell to code to leave the while loop.
         }
       }
     break;
@@ -81,13 +81,29 @@ void uiStateMachine(char command)
           lcdDrawLine(cmdBuffer[0], cmdBuffer[1], // start point x,y
                       cmdBuffer[2], cmdBuffer[3], // end point x,y
                       pixel);                     // draw or erase?
-          break;
+          break; // This is where we tell to code to leave the while loop.
         }
       }
     
     break;
     
-    case DRAW_CIRCLE:
+    case DRAW_CIRCLE:      
+    while(1)  // Stay here until we are *told* to leave.
+      {
+        if (bufferSize > 0)
+        {
+          cmdBuffer[cmdBufferPtr++] = serialBufferPop();
+        }
+        if (cmdBufferPtr > 3)
+        {
+          cmdBufferPtr = 0;
+          if (cmdBuffer[4] == 0) pixel == OFF;
+          lcdDrawCircle(cmdBuffer[0], cmdBuffer[1], // center point x,y
+                        cmdBuffer[2],               // radius
+                        pixel);                     // draw or erase?
+          break; // This is where we tell to code to leave the while loop.
+        }
+      }
     
     break;
     
