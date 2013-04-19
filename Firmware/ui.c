@@ -32,7 +32,7 @@ void uiStateMachine(char command)
     break;
     
     case TOGGLE_SPLASH:
-    // to be implemented
+      toggleSplash();
     break;
     
     case ADJ_BL_LEVEL:

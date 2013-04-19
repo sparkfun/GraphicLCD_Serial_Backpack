@@ -20,7 +20,7 @@ int main(void)
 	timerInit();
 	serialInit(BR115200);
 	sei();
-  lcdDrawLogo();
+  if ((getSplash() & 0x01)==1) lcdDrawLogo();
   _delay_ms(1000);
   if (bufferSize == 0)
   {
@@ -50,6 +50,7 @@ int main(void)
   }
   else setBaudRate('6');
   
+  lcdClearScreen();
   clearBuffer();
   
   putLine((char*)"Ready to serve!");
