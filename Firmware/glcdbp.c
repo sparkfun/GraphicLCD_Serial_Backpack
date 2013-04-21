@@ -1,3 +1,14 @@
+/*
+
+TO-DO:
+- Add demo mode.
+- Variable-ize things involving screen width and height.
+- Finish interface code for t6963 controller
+- Add decision making code for small screen/large screen modes.
+- Add sprite storage/display
+- Add command mode escape character '|'
+
+*/
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "glcdbp.h"

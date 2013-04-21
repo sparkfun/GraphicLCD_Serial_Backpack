@@ -10,6 +10,8 @@ uint8_t  cursorPos[] = {0,0};
 uint8_t  textOrigin[] = {0,0};
 uint16_t textLength = 0; // Number of characters typed since last time we set
                          //   cursorPos to textOrigin. Facilitates backspace.
+uint8_t  xDim = 128;
+uint8_t  yDim = 64;
 
 void lcdConfig(void)
 {
@@ -240,14 +242,14 @@ void lcdDrawChar(char printMe)
   switch(printMe)
   {
     case '\r':
-    while (cursorPos[0] <= 122) 
+    while (cursorPos[0] <= (xDim-6)) 
     {
       cursorPos[0] += 6;
       textLength++;
     }
     cursorPos[0] = textOrigin[0];
     cursorPos[1] += 8;
-    if (cursorPos[1] >=57) cursorPos[1] = textOrigin[1];
+    if (cursorPos[1] >= (yDim-7)) cursorPos[1] = textOrigin[1];
     break;
     
     case '\b':
@@ -260,16 +262,14 @@ void lcdDrawChar(char printMe)
         // Even more special: we're at the top of the text block
         if (cursorPos[1] == textOrigin[1])
         {
-          while (cursorPos[1] < 56) cursorPos[1] +=8;
-          while (cursorPos[0] <= 122) cursorPos[0] += 6;
+          while (cursorPos[1] < (yDim-8)) cursorPos[1] +=8;
+          while (cursorPos[0] <= (xDim-6)) cursorPos[0] += 6;
           cursorPos[0]-=6;
-          //cursorPos[1]-=8;
         }
         else // Not at the top of the block, just the start of the line.
         {
-          putChar('b');
           cursorPos[1] -= 8;
-          while (cursorPos[0] <= 122) cursorPos[0] += 6;
+          while (cursorPos[0] <= (xDim-6)) cursorPos[0] += 6;
           cursorPos[0]-=6;
         }
       }
@@ -326,15 +326,13 @@ void lcdDrawChar(char printMe)
     }
     cursorPos[0] += 6;  // Increment our x position by one character space.
     // if we're at the end of the line, we need to wrap to the next line.
-    if (cursorPos[0] >= 122)
+    if (cursorPos[0] >= (xDim-6))
     {
       cursorPos[0] = textOrigin[0];
       cursorPos[1] += 8;
-      if (cursorPos[1] >= 57) cursorPos[1] = textOrigin[1];
+      if (cursorPos[1] >= (yDim-7)) cursorPos[1] = textOrigin[1];
     }
 	}	
-  
-  putDec(textLength);
 }
 
 // This function has room for lots of improvement. We draw over the block to
@@ -371,18 +369,17 @@ void lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 
 void lcdDrawLogo(void)
 {
-  if (display == SMALL)
+  uint8_t leftEdge = ((xDim/2)-10);
+
+  for (uint8_t i = 0; i<10; i++)
   {
-    for (uint8_t i = 0; i<10; i++)
-    {
-      uint8_t colTemp = pgm_read_byte(&logoArray[i]);
-      lcdDrawColumn(54+i, 3, colTemp);
-    }
-    for (uint8_t i = 10; i<20; i++)
-    {
-      uint8_t colTemp = pgm_read_byte(&logoArray[i]);
-      lcdDrawColumn(44+i, 4, colTemp);
-    }
+    uint8_t colTemp = pgm_read_byte(&logoArray[i]);
+    lcdDrawColumn(leftEdge+i, 3, colTemp);
+  }
+  for (uint8_t i = 10; i<20; i++)
+  {
+    uint8_t colTemp = pgm_read_byte(&logoArray[i]);
+    lcdDrawColumn(leftEdge-10+i, 4, colTemp);
   }
 }
 
@@ -390,7 +387,7 @@ void lcdDrawColumn(uint8_t x, uint8_t y, uint8_t colVal)
 {
 	if (display == SMALL)
 	{
-		if (x<128) ks0108bDrawColumn(x, y, colVal);
+		if (x<xDim) ks0108bDrawColumn(x, y, colVal);
 	}
 }
 
@@ -398,6 +395,6 @@ void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 {
 	if (display == SMALL)
 	{
-		if (x<128 && y<64) ks0108bDrawPixel(x, y, pixel);
+		if (x<xDim && y<yDim) ks0108bDrawPixel(x, y, pixel);
 	}
 }
