@@ -20,7 +20,7 @@
 uint8_t column = 0;			// We want to be able to track the current
 							//  x position sometimes; it allows 
               
-extern uint8_t reverse;
+extern volatile uint8_t reverse;
 
 // ks0108bReset()- pretty self explanatory, but I'm not really sure what
 //  the point of twiddling the reset line is, as it doesn't seem to really

@@ -1,10 +1,11 @@
 #include <avr/io.h>
 #include "serial.h"
+#include "glcdbp.h"
 
 // These variables are defined in glcdbp.c, and are used for the input buffer
 //   from the serial port. We need to be able to access them here because we'll
 //   want to abstract popping from the buffer to a function.
-extern volatile uint8_t 	rxRingBuffer[416];
+extern volatile uint8_t 	rxRingBuffer[BUF_DEPTH];
 extern volatile uint16_t 	rxRingHead;
 extern volatile uint16_t	rxRingTail;
 extern volatile uint16_t	bufferSize;
@@ -79,7 +80,7 @@ char serialBufferPop(void)
 {
   bufferSize--;
   char retVal = rxRingBuffer[rxRingTail++];
-  if (rxRingTail == 416) rxRingTail = 0;
+  if (rxRingTail == BUF_DEPTH) rxRingTail = 0;
   return retVal;
 }
 

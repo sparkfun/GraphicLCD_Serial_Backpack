@@ -6,7 +6,10 @@
 
 extern enum DISPLAY_TYPE display;
 
-uint8_t cursorPos[] = {0,0};
+uint8_t  cursorPos[] = {0,0};
+uint8_t  textOrigin[] = {0,0};
+uint16_t textLength = 0; // Number of characters typed since last time we set
+                         //   cursorPos to textOrigin. Facilitates backspace.
 
 void lcdConfig(void)
 {
@@ -17,6 +20,9 @@ void lcdConfig(void)
 
 void lcdClearScreen(void)
 {
+  cursorPos[0] = textOrigin[0];
+  cursorPos[1] = textOrigin[1];
+  textLength = 0;
 	ks0108bClear();
 }
 
@@ -229,21 +235,106 @@ void lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel)
 
 void lcdDrawChar(char printMe)
 {
-	if (printMe >= ' ' && printMe <= '~')
+  // So, we'll check our three special cases first: backspace, newline, and
+  //   carriage return.
+  switch(printMe)
+  {
+    case '\r':
+    while (cursorPos[0] <= 122) 
+    {
+      cursorPos[0] += 6;
+      textLength++;
+    }
+    cursorPos[0] = textOrigin[0];
+    cursorPos[1] += 8;
+    if (cursorPos[1] >=57) cursorPos[1] = textOrigin[1];
+    break;
+    
+    case '\b':
+    if (textLength > 0) // no text, no backspace!
+    {
+      textLength--;
+      // special case: we're at the beginning of a line.
+      if (cursorPos[0] == textOrigin[0])
+      {
+        // Even more special: we're at the top of the text block
+        if (cursorPos[1] == textOrigin[1])
+        {
+          while (cursorPos[1] < 56) cursorPos[1] +=8;
+          while (cursorPos[0] <= 122) cursorPos[0] += 6;
+          cursorPos[0]-=6;
+          //cursorPos[1]-=8;
+        }
+        else // Not at the top of the block, just the start of the line.
+        {
+          putChar('b');
+          cursorPos[1] -= 8;
+          while (cursorPos[0] <= 122) cursorPos[0] += 6;
+          cursorPos[0]-=6;
+        }
+      }
+      // Normal case: not at the left or top edge of the block
+      else
+      {
+        cursorPos[0] -= 6;
+      } 
+      // Now that our cursor is where it ought to be, we can blank out the
+      //   current character location by turning the pixels there off.
+      for (uint8_t x = cursorPos[0]; x<cursorPos[0]+5; x++)
+      {
+        for (uint8_t y = cursorPos[1]; y<cursorPos[1]+8; y++)
+        {
+          lcdDrawPixel(x,y,OFF);
+        }
+      }
+    }
+    break;
+  }
+  
+	if ((printMe >= ' ') && (printMe <= '~'))
 	{
 		uint16_t charOffset = printMe - ' ';
 		charOffset=5*charOffset;
-		for (uint8_t i = 0; i<5; i++)
+    textLength++;
+    // This section implements a rapid-write- assumes a grid of 6x8 characters.
+		//   I'm leaving it in because it's cool; we need to implement an arbitrary
+    //   character write function for random locations. Maybe we'll find a use
+    //   for it in the future?
+    /*
+    for (uint8_t i = 0; i<5; i++)
 		{
 			uint8_t colTemp = pgm_read_byte(&characterArray[charOffset+i]);
 			lcdDrawColumn(cursorPos[0]*6 + i, cursorPos[1], colTemp);
 		}
-		if (++cursorPos[0]>21)
+		if (++cursorPos[0]>20)
 		{
 			cursorPos[0] = 0;
 			if (++cursorPos[1]>7) cursorPos[1] = 0;
-		}
+		}*/
+    
+    // This is the arbitrary character generator. For this, cursorPos is the
+    //   upper left of the character, and we'll draw it pixel by pixel, one
+    //   column at a time. It's slower, but more flexible.
+    for (uint8_t x = cursorPos[0]; x<cursorPos[0]+5; x++)
+    {
+      uint8_t colTemp = pgm_read_byte(&characterArray[charOffset++]);
+      for (uint8_t y = cursorPos[1]; y<cursorPos[1]+8; y++)
+      {
+        if ((colTemp>>(y-cursorPos[1]))&0x01) lcdDrawPixel(x,y,ON);
+        else lcdDrawPixel(x,y,OFF);
+      }
+    }
+    cursorPos[0] += 6;  // Increment our x position by one character space.
+    // if we're at the end of the line, we need to wrap to the next line.
+    if (cursorPos[0] >= 122)
+    {
+      cursorPos[0] = textOrigin[0];
+      cursorPos[1] += 8;
+      if (cursorPos[1] >= 57) cursorPos[1] = textOrigin[1];
+    }
 	}	
+  
+  putDec(textLength);
 }
 
 // This function has room for lots of improvement. We draw over the block to

@@ -206,8 +206,8 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 #
 # Type: avrdude -c ?
 # to get a full listing.
-AVRDUDE_PROGRAMMER = avrispmkii
-#AVRDUDE_PROGRAMMER = jtag2isp
+#AVRDUDE_PROGRAMMER = avrispmkii
+AVRDUDE_PROGRAMMER = jtag2isp
 #AVRDUDE_PROGRAMMER = ponyser
 
 # com1 = serial port. Use lpt1 to connect to parallel port.

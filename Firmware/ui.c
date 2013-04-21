@@ -7,11 +7,15 @@
 // These variables are defined in glcdbp.c, and are used for the input buffer
 //   from the serial port. We need to be able to access them here because we'll
 //   be stuck here parsing input from the serial port once a command comes in.
-extern volatile uint8_t 	rxRingBuffer[416];
+extern volatile uint8_t 	rxRingBuffer[BUF_DEPTH];
 extern volatile uint16_t 	rxRingHead;
 extern volatile uint16_t	rxRingTail;
 extern volatile uint16_t	bufferSize;
-extern          uint8_t   reverse;
+extern volatile uint8_t   reverse;
+
+extern uint8_t  cursorPos[];
+extern uint8_t  textOrigin[];
+extern uint16_t textLength;
 
 void uiStateMachine(char command)
 {
@@ -29,7 +33,7 @@ void uiStateMachine(char command)
     break;
     
     case TOGGLE_BGND:
-      reverse = ~reverse;
+      reverse ^= 0x01;
       toggleReverse();
       lcdClearScreen();
     break;
@@ -100,11 +104,51 @@ void uiStateMachine(char command)
     break;
     
     case ADJ_TEXT_X:
-    
+      while(1)  // Stay here until we are *told* to leave.
+      {
+        if (bufferSize > 0)
+        {
+          cmdBuffer[cmdBufferPtr++] = serialBufferPop();
+        }
+        if (cmdBufferPtr > 0)
+        {
+          cmdBufferPtr = 0;
+          // The most recent byte is the new X origin of the text window- IF it
+          //   makes sense. It only makes sense if it is at least 6 pixels from
+          //   the right edge of the screen.
+          if (cmdBuffer[0] <= 122)
+          {
+            textOrigin[0] = cmdBuffer[0];
+            cursorPos[0] = textOrigin[0];
+            textLength = 0;
+          }
+          break; // This is where we tell to code to leave the while loop.
+        }
+      }
     break;
     
     case ADJ_TEXT_Y:
-    
+      while(1)  // Stay here until we are *told* to leave.
+      {
+        if (bufferSize > 0)
+        {
+          cmdBuffer[cmdBufferPtr++] = serialBufferPop();
+        }
+        if (cmdBufferPtr > 0)
+        {
+          cmdBufferPtr = 0;
+          // The most recent byte is the new Y origin of the text window- IF it
+          //   makes sense. It only makes sense if it is at least 8 pixels from
+          //   the bottom edge of the screen.
+          if (cmdBuffer[1] <= 56)
+          {
+            textOrigin[1] = cmdBuffer[1];
+            cursorPos[1] = textOrigin[1];
+            textLength = 0;
+          }
+          break; // This is where we tell to code to leave the while loop.
+        }
+      }
     break;
     
     case DRAW_PIXEL:

@@ -8,11 +8,11 @@
 #include "nvm.h"
 
 enum DISPLAY_TYPE   display = SMALL;
-volatile uint8_t 	  rxRingBuffer[416];
+volatile uint8_t 	  rxRingBuffer[BUF_DEPTH];
 volatile uint16_t	  bufferSize = 0;
 volatile uint16_t   rxRingHead = 0;
 volatile uint16_t   rxRingTail = 0;
-uint8_t             reverse = 0;
+volatile uint8_t    reverse = 0;
 
 int main(void)
 {
@@ -56,15 +56,22 @@ int main(void)
   lcdClearScreen();
   clearBuffer();
   
-  putLine((char*)"Ready to serve!");
+  putLine("Ready to serve!");
+  
 	while(1)
 	{
 		while (bufferSize > 0)
 		{
 			char bufferChar = serialBufferPop();
-      if (bufferChar < ' ')
-        uiStateMachine(bufferChar);
-      else if ((bufferChar >= ' ') && (bufferChar <= '~'))
+      if ((bufferChar < ' ') &&    // If not text...
+          (bufferChar != '\r') &&  // ...and not CR...
+          (bufferChar != '\b'))    // ...and not backspace...
+        uiStateMachine(bufferChar); // ...check the UI and see what to do.
+      // Otherwise, draw the character. lcdDrawChar also handles backspace,
+      //   carriage return and new line.
+      else if (((bufferChar >= ' ') && (bufferChar <= '~')) ||
+               (bufferChar == '\r') ||
+               (bufferChar == '\b') )
         lcdDrawChar(bufferChar);
 		}
 	}
