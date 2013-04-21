@@ -66,7 +66,7 @@ void putBin(uint8_t TXData)
 	}
 }
 
-void putLine(uint8_t *TXData)
+void putLine(char *TXData)
 {
 	while (*TXData != '\0')
 	{

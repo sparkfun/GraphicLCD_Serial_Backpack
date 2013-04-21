@@ -161,7 +161,7 @@ void uiStateMachine(char command)
         if (cmdBufferPtr > 2)
         {
           cmdBufferPtr = 0;
-          if (cmdBuffer[2] == 0) pixel == OFF;
+          if (cmdBuffer[2] == 0) pixel = OFF;
           lcdDrawPixel(cmdBuffer[0], cmdBuffer[1], pixel);
           break; // This is where we tell to code to leave the while loop.
         }
@@ -178,7 +178,7 @@ void uiStateMachine(char command)
         if (cmdBufferPtr > 4)
         {
           cmdBufferPtr = 0;
-          if (cmdBuffer[4] == 0) pixel == OFF;
+          if (cmdBuffer[4] == 0) pixel = OFF;
           lcdDrawLine(cmdBuffer[0], cmdBuffer[1], // start point x,y
                       cmdBuffer[2], cmdBuffer[3], // end point x,y
                       pixel);                     // draw or erase?
@@ -198,7 +198,7 @@ void uiStateMachine(char command)
         if (cmdBufferPtr > 3)
         {
           cmdBufferPtr = 0;
-          if (cmdBuffer[4] == 0) pixel == OFF;
+          if (cmdBuffer[4] == 0) pixel = OFF;
           lcdDrawCircle(cmdBuffer[0], cmdBuffer[1], // center point x,y
                         cmdBuffer[2],               // radius
                         pixel);                     // draw or erase?
@@ -218,7 +218,7 @@ void uiStateMachine(char command)
         if (cmdBufferPtr > 4)
         {
           cmdBufferPtr = 0;
-          if (cmdBuffer[4] == 0) pixel == OFF;
+          if (cmdBuffer[4] == 0) pixel = OFF;
           lcdDrawBox(cmdBuffer[0], cmdBuffer[1], // start point x,y
                      cmdBuffer[2], cmdBuffer[3], // end point x,y
                      pixel);                     // draw or erase?

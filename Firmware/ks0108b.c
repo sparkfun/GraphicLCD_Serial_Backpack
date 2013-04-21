@@ -81,9 +81,6 @@ void ks0108bWriteData(uint8_t data)
 //  in the array pointed to by *buffer. Make sure buffer is big enough!
 void ks0108bReadBlock(uint8_t address, uint8_t blockSize, uint8_t *buffer)
 {
-	int8_t chip2Column = 0;	 	// We'll calculate a value to go in here
-								//  later, if the read extends across the
-								//  central border.
 	uint8_t chip2BlockSize = 0;
 	// Inexplicably, you need to start at one address below the desired
 	//  starting address. For address 0, you need to start at address 63.
