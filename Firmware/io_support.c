@@ -1,5 +1,8 @@
 #include <avr/io.h>
+#include "glcdbp.h"
 #include "io_support.h"
+
+extern enum DISPLAY_TYPE display;
 
 void ioInit(void)
 {
@@ -11,16 +14,16 @@ void ioInit(void)
 	PORTB &= ~(1<<nBL_EN);		// Turn backlight on
 	
 	// Now we need to configure the I/O to support the two types of display.
-	//if (display == SMALL)
+	if (display == SMALL)
 	{
 		DDRC =  ((1<<EN) | (1<<RS) | (1<<R_W) | (1<<RESET) | (1<<CS1) | (1<<CS2));
 		PORTC = ((1<<EN) | (1<<RS) | (1<<R_W) | (1<<RESET) | (1<<CS1) | (1<<CS2));
 	}
-	/*else if (display == LARGE)
+	else if (display == LARGE)
 	{
 		DDRC =  ((1<<WR) | (1<<RD) | (1<<CE) | (1<<CD) | (1<<HALT) | (1<<RST));
 		PORTC = ((1<<WR) | (1<<RD) | (1<<CE) | (1<<CD) | (1<<HALT) | (1<<RST));
-	}*/
+	}
 }
 
 void LATrigger(void)

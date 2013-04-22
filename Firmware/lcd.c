@@ -1,5 +1,6 @@
 #include<avr/io.h>
 #include <avr/pgmspace.h> 
+#include "glcdbp.h"
 #include "lcd.h"
 #include "ks0108b.h"
 #include "serial.h"
@@ -15,9 +16,14 @@ uint8_t  yDim = 64;
 
 void lcdConfig(void)
 {
-	ks0108bReset();
-	ks0108bDisplayOn();
-	ks0108bClear();
+  if (display == SMALL)
+  {
+    ks0108bReset();
+    ks0108bDisplayOn();
+    ks0108bClear();
+    xDim = 128;
+    yDim = 64;
+  }
 }
 
 void lcdClearScreen(void)
@@ -25,7 +31,7 @@ void lcdClearScreen(void)
   cursorPos[0] = textOrigin[0];
   cursorPos[1] = textOrigin[1];
   textLength = 0;
-	ks0108bClear();
+  if (display == SMALL)	ks0108bClear();
 }
 
  // Draws a line between two points p1(p1x,p1y) and p2(p2x,p2y).

@@ -3,7 +3,6 @@
 TO-DO:
 - Add demo mode.
 - Finish interface code for t6963 controller
-- Add decision making code for small screen/large screen modes.
 - Add sprite storage/display
 */
 #include <avr/interrupt.h>
@@ -24,15 +23,36 @@ volatile uint8_t    reverse = 0;
 
 int main(void)
 {
+  // ioInit() configures the IO pins as we'll need them for the rest of the
+  //  code; do that first.
 	ioInit();
+  // Once that's done, we want to check and see if we have a large or small
+  //  display on our hands. We can tell because PB3 will be pulled high if
+  //  the display is large (hopefully; that's done at build time).
+  if ((PINB & 0x08) == 0x08) display = LARGE;
+  else display = SMALL;
+  // Now we know what to do for our configuration.
 	lcdConfig();
+  // We use a timer (timer1) for our PWM of the backlight.
 	timerInit();
+  // By default, we want to start up at 115200BPS. In a second, we'll check
+  //  for any input from the user to see if we should remain at 115200 or
+  //  check the EEPROM for a different speed.
 	serialInit(BR115200);
+  // Enable interrupts.
 	sei();
+  // Check to see if we want to be in white-on-black mode (1) or black-on-white
+  //   mode (reverse = 0).
   reverse = 0x01 & getReverse();
+  // Clear the screen for good measure.
   lcdClearScreen();
+  // Draw the splash, if the EEPROM value says we should.
   if ((getSplash() & 0x01)==1) lcdDrawLogo();
+  // Now wait for one second, for the user to override the stored baud rate
+  //  and get back to 115200, if they so desire.
   _delay_ms(1000);
+  // If the user has send *any* character during the splash time, we should
+  //  skip this switch and set our baud rate back to 115200.
   if (bufferSize == 0)
   {
     switch(getBaudRate())
@@ -60,8 +80,9 @@ int main(void)
     }
   }
   else setBaudRate('6');
-  
+  // Clear off the splash.
   lcdClearScreen();
+  // Clear the serial buffer.
   clearBuffer();
   
   putLine("Ready to serve!");
