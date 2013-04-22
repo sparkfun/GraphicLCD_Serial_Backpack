@@ -201,11 +201,11 @@ void ks0108bDisplayOn(void)
 {
 	// Data lines should be 0x3F for display enable.
 	PORTC &= ~(	(1<<R_W)|			// Clear R_W (Write mode)
-				(1<<RS));			// Clear RS (Instruction mode)
+              (1<<RS));			// Clear RS (Instruction mode)
 	setData(0x3F);
 	strobeEN();
-	PORTC |= (	(1<<R_W)|			// Set R_W
-				(1<<RS));			// Set RS
+	PORTC |= ( (1<<R_W)|			// Set R_W
+              (1<<RS));			// Set RS
 }
 
 void ks0108bDisplayOff(void)
@@ -215,17 +215,17 @@ void ks0108bDisplayOff(void)
 void ks0108bSetStartLine(void)
 {
 	PORTC &= ~(	(1<<CS1)|
-				(1<<CS2)|
-				(1<<R_W)|			// Clear R_W (Write mode)
-				(1<<RS));			// Clear RS (Register select for
+              (1<<CS2)|
+              (1<<R_W)|			// Clear R_W (Write mode)
+              (1<<RS));			// Clear RS (Register select for
 									//  enable register)
 	// Data lines should be 0xC0 for set start line to 0.
 	setData(0xC0);
 	strobeEN();
 	PORTC |= (	(1<<R_W)|			// Set R_W
-				(1<<RS)|			// Set RS
-				(1<<CS1)|
-				(1<<CS2));
+              (1<<RS)|			// Set RS
+              (1<<CS1)|
+              (1<<CS2));
 }
 
 void ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)

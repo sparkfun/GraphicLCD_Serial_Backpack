@@ -2,12 +2,9 @@
 
 TO-DO:
 - Add demo mode.
-- Variable-ize things involving screen width and height.
 - Finish interface code for t6963 controller
 - Add decision making code for small screen/large screen modes.
 - Add sprite storage/display
-- Add command mode escape character '|'
-
 */
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -74,10 +71,13 @@ int main(void)
 		while (bufferSize > 0)
 		{
 			char bufferChar = serialBufferPop();
-      if ((bufferChar < ' ') &&    // If not text...
-          (bufferChar != '\r') &&  // ...and not CR...
-          (bufferChar != '\b'))    // ...and not backspace...
-        uiStateMachine(bufferChar); // ...check the UI and see what to do.
+      // If the character received is the command escape character ('|')...
+      if (bufferChar == '|')
+      {
+        while (bufferSize == 0);    // ...wait for the next character...
+        bufferChar = serialBufferPop();
+        uiStateMachine(bufferChar); // ... then see what to do.
+      }
       // Otherwise, draw the character. lcdDrawChar also handles backspace,
       //   carriage return and new line.
       else if (((bufferChar >= ' ') && (bufferChar <= '~')) ||
