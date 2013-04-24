@@ -6,6 +6,7 @@
 #include "serial.h"
 
 extern enum DISPLAY_TYPE display;
+extern uint8_t reverse;
 
 uint8_t  cursorPos[] = {0,0};
 uint8_t  textOrigin[] = {0,0};
@@ -341,9 +342,112 @@ void lcdDrawChar(char printMe)
 	}	
 }
 
-void lcdDrawSprite(uint8_t x, uint8_t y, uint8_t mask, 
-                   uint8_t sprite, PIX_VAL pixel)
+// Sprite drawing is just like character drawing, except for two things:
+//  the size (a sprite is 8x8 pixels, instead of 6x8), and sprites use a
+//  mask to preserve some portion of the pixels in the region as they were
+//  before the write occurred. As with characters, x and y are the upper left
+//  corner of the sprite. angle is establised by one of four ASCII characters-
+//  '0', '3', '6', '9', which correspond to hands on a clock.
+void lcdDrawSprite(uint8_t x, uint8_t y, uint8_t sprite, char angle, 
+                    PIX_VAL pixel)
   {
+    uint16_t spriteIndex = sprite*8; // Index of the first byte of our sprite.
+    uint8_t buffer[8]; // We'll use this buffer, along with the mask, to
+                       //  draw only the sprite without disturbing the
+                       //  background.
+    lcdGetDataBlock(x, y, buffer);
+    // Okay, now our buffer is full of the contents of the landing zone for
+    //  the sprite. We can now clear the sprite's landing spot (by ANDing with
+    //  the mask) and draw in bits where the sprite should be (by ORing with
+    //  the sprite). To accommodate reverse mode, we'll complement all the bits
+    //  before masking. The draw routine will handle the rendering.
+    for (uint16_t i = spriteIndex; i < spriteIndex + 8; i++)
+    {
+      if (reverse) buffer[i-spriteIndex] ^= 0xff;
+      buffer[i-spriteIndex] &= ~pgm_read_byte(&maskArray[i]);
+      buffer[i-spriteIndex] |= pgm_read_byte(&spriteArray[i]);
+    }
+    // The buffer now holds the block as it should look. Now we need to print
+    //  it, pixel by pixel, to the screen.
+    switch(angle)
+    {
+      case '0':
+      for (uint8_t i = 0; i<8; i++)
+      {
+        for (uint8_t j = 0; j<8; j++)
+        {
+          if (pixel == ON)
+          {
+            if (buffer[i]&0x01) lcdDrawPixel(x+i,y+7-j,ON);
+            else lcdDrawPixel(x+i,y+7-j,OFF);
+          }
+          else
+          {
+            if (buffer[i]&0x01) lcdDrawPixel(x+i,y+7-j,OFF);
+            else lcdDrawPixel(x+i,y+7-j,ON);
+          }
+          buffer[i] = buffer[i]>>1;
+        }
+      }
+      break;
+      case '3':
+      for (uint8_t i = 0; i<8; i++)
+      {
+        for (uint8_t j = 0; j<8; j++)
+        {
+          if (pixel == ON)
+          {
+            if (buffer[i]&0x01) lcdDrawPixel(x+j,y+i,ON);
+            else lcdDrawPixel(x+j,y+i,OFF);
+          }
+          else
+          {
+            if (buffer[i]&0x01) lcdDrawPixel(x+j,y+i,OFF);
+            else lcdDrawPixel(x+j,y+i,ON);
+          }
+          buffer[i] = buffer[i]>>1;
+        }
+      }
+      break;
+      case '6':
+      for (uint8_t i = 0; i<8; i++)
+      {
+        for (uint8_t j = 0; j<8; j++)
+        {
+          if (pixel == ON)
+          {
+            if (buffer[i]&0x01) lcdDrawPixel(x+7-i,y+j,ON);
+            else lcdDrawPixel(x+7-i,y+j,OFF);
+          }
+          else
+          {
+            if (buffer[i]&0x01) lcdDrawPixel(x+7-i,y+j,OFF);
+            else lcdDrawPixel(x+7-i,y+j,ON);
+          }
+          buffer[i] = buffer[i]>>1;
+        }
+      }
+      break;
+      case '9':
+      for (uint8_t i = 0; i<8; i++)
+      {
+        for (uint8_t j = 0; j<8; j++)
+        {
+          if (pixel == ON)
+          {
+            if (buffer[i]&0x01) lcdDrawPixel(x+7-j,y+7-i,ON);
+            else lcdDrawPixel(x+7-j,y+7-i,OFF);
+          }
+          else
+          {
+            if (buffer[i]&0x01) lcdDrawPixel(x+7-j,y+7-i,OFF);
+            else lcdDrawPixel(x+7-j,y+7-i,ON);
+          }
+          buffer[i] = buffer[i]>>1;
+        }
+      }
+      break;
+    }
   }
 
 // This function has room for lots of improvement. We draw over the block to
@@ -408,4 +512,9 @@ void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 	{
 		if (x<xDim && y<yDim) ks0108bDrawPixel(x, y, pixel);
 	}
+}
+
+void lcdGetDataBlock(uint8_t x, uint8_t y, uint8_t *buffer)
+{
+  if (display == SMALL) ks0108bReadBlock(x, y, buffer);
 }

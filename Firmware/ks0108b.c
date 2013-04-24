@@ -76,52 +76,30 @@ void ks0108bWriteData(uint8_t data)
 	}
 }
 
-// ks0108bReadBlock()- reads up to 64 bytes from the display, starting at
-//  column address, continuing for blockSize bytes, and storing the data
-//  in the array pointed to by *buffer. Make sure buffer is big enough!
-void ks0108bReadBlock(uint8_t address, uint8_t blockSize, uint8_t *buffer)
+// ks0108bReadBlock()- reads an 8x8 block of arbitrary pixels from the display.
+//  The block may be split across more than one page, so we'll need to buffer
+//  from up to two pages, then do some shifting.
+void ks0108bReadBlock(uint8_t x, uint8_t y, uint8_t *buffer)
 {
-	uint8_t chip2BlockSize = 0;
-	// Inexplicably, you need to start at one address below the desired
-	//  starting address. For address 0, you need to start at address 63.
-	if (address == 0)  		address = 63;
-	else if (address == 64) address = 127;
-	else			   		address--;
-	// This function is address-agnostic; no need to account for whether
-	//  we're on chip one or two.
-	ks0108bSetColumn(address);
-	// We need to determine which chip we're working with at this point,
-	//  however, and that will have serious implications for later, should
-	//  our block read extend across the mid-screen border.
-	if (address <64)
-	{
-		PORTC &= ~( (1<<CS1)|
-					(1<<EN));
-		if (blockSize > (63 - address) ) 
-		{
-			chip2BlockSize = blockSize - 63 - address;
-			blockSize = 0;
-		}
-	}
-	else if (address <128) 	PORTC &= ~( (1<<CS2)|
-										(1<<EN));
-	else return;
-	strobeEN();
-	PORTC |= (1<<EN);
-	_delay_us(10);
-	PORTC &= ~(1<<EN);
-	_delay_us(E_DELAY);
-	for (uint8_t i = 0; i<blockSize; i++)
-	{
-		PORTC |= (1<<EN);
-		_delay_us(10);
-		buffer[i] = readData();
-		PORTC &= ~(1<<EN);
-		_delay_us(E_DELAY);
-	}
-	PORTC |= ~( (1<<CS1)|
-				(1<<CS2)|
-				(1<<EN));
+  uint8_t firstRowPixels, secondRowPixels;
+  // If y is NOT divisible by 8, then y%8 pixels are on the first line,
+  //  and 8-y%8 pixels are on the second line.
+  firstRowPixels = y%8;
+  secondRowPixels = 8 - (y%8);
+  // Okay, now we know how many pixels are in each row. Now let's pull the
+  //  data from those two rows.
+	ks0108bSetPage(y/8);
+  for (uint8_t i = 0; i<8; i++)
+  {
+    // Fetch the data and left-shift it so the topmost pixel of the group
+    //  we're interested in is the MSB.
+    buffer[i] = ks0108bReadData(x+i)<<(8-firstRowPixels);
+  }
+  ks0108bSetPage((y/8) + 1);
+  for (uint8_t i = 0; i<8; i++)
+  {
+    buffer[i] |= ks0108bReadData(x+i)>>(8-secondRowPixels);
+  }
 }
 
 uint8_t ks0108bReadData(uint8_t x)

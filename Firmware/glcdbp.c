@@ -23,14 +23,17 @@ volatile uint8_t    reverse = 0;
 
 int main(void)
 {
-  // ioInit() configures the IO pins as we'll need them for the rest of the
-  //  code; do that first.
-	ioInit();
-  // Once that's done, we want to check and see if we have a large or small
+  // The first thing we want to check is if we have a large or small
   //  display on our hands. We can tell because PB3 will be pulled high if
   //  the display is large (hopefully; that's done at build time).
+  PORTB |= 0x08; // Enable the pull-up on PB3.
   if ((PINB & 0x08) == 0x08) display = LARGE;
   else display = SMALL;
+  PORTB &= ~0x08; // Disable the pull-up on PB3.
+  // ioInit() configures the IO pins as we'll need them for the rest of the
+  //  code; once we've identified our display size, we'll do the pins
+  //  accordingly.
+	ioInit();
   // Now we know what to do for our configuration.
 	lcdConfig();
   // We use a timer (timer1) for our PWM of the backlight.
@@ -50,7 +53,7 @@ int main(void)
   if ((getSplash() & 0x01)==1) lcdDrawLogo();
   // Now wait for one second, for the user to override the stored baud rate
   //  and get back to 115200, if they so desire.
-  _delay_ms(1000);
+  //_delay_ms(1000);
   // If the user has send *any* character during the splash time, we should
   //  skip this switch and set our baud rate back to 115200.
   if (bufferSize == 0)
@@ -86,6 +89,15 @@ int main(void)
   clearBuffer();
   
   putLine("Ready to serve!");
+  
+  lcdDrawSprite(0,0,0,'0', ON);
+  lcdDrawSprite(8,0,0,'6', ON);
+  lcdDrawSprite(16,0,0,'3', ON);
+  lcdDrawSprite(24,0,0,'9', ON);
+  lcdDrawSprite(32,1,0,'0', ON);
+  lcdDrawSprite(40,1,0,'6', ON);
+  lcdDrawSprite(48,1,0,'3', ON);
+  lcdDrawSprite(56,1,0,'9', ON);
   
 	while(1)
 	{
