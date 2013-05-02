@@ -1,10 +1,8 @@
 /*
-
 TO-DO:
 - Add demo mode.
-- Finish interface code for t6963 controller
-- Add sprite storage/display
 */
+
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "glcdbp.h"
@@ -13,7 +11,6 @@ TO-DO:
 #include "lcd.h"
 #include "ui.h"
 #include "nvm.h"
-#include "t6963.h"
 
 enum DISPLAY_TYPE   display = SMALL;
 volatile uint8_t 	  rxRingBuffer[BUF_DEPTH];
@@ -120,7 +117,7 @@ int main(void)
   //  completed and the display is ready to rock. It is commented in the
   //  production version of the code but left in place.
   putLine("Ready to serve!");
-
+  
   // Under normal circumstances, we'll spend *all* our time cycling through
   //  this loop, parsing input from the serial port. The serial data is
   //  buffered by an interrupt, and we'll pop that buffer here (and in ui.c)

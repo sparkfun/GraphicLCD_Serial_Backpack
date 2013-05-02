@@ -11,7 +11,6 @@ void 		lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel
 void 		lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r, PIX_VAL pixel);
 void		lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel);
 void		lcdDrawChar(char printMe);
-void 		lcdDrawColumn(uint8_t x, uint8_t y, uint8_t colVal);
 void    lcdDrawLogo(void);
 void    lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 void    lcdGetDataBlock(uint8_t x, uint8_t y, uint8_t *buffer);

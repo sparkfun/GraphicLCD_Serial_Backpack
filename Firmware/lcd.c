@@ -493,26 +493,47 @@ void lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 
 void lcdDrawLogo(void)
 {
-  uint8_t leftEdge = ((xDim/2)-10);
+  uint8_t x = ((xDim/2)-10);
+  uint8_t y  = ((yDim/2)-8);
 
   for (uint8_t i = 0; i<10; i++)
   {
     uint8_t colTemp = pgm_read_byte(&logoArray[i]);
-    lcdDrawColumn(leftEdge+i, 3, colTemp);
-  }
+    for (uint8_t j = 0; j<8; j++)
+    {
+      if (reverse == 0)
+      {
+        if (colTemp&0x01) lcdDrawPixel(x+i,y+j,ON);
+        else lcdDrawPixel(x+i,y+j,OFF);
+      }
+      else
+      {
+        if (colTemp&0x01) lcdDrawPixel(x+i,y+j,OFF);
+        else lcdDrawPixel(x+i,y+j,ON);
+      }
+      colTemp = colTemp>>1;
+    }
+  }  
+  y+=8;
   for (uint8_t i = 10; i<20; i++)
   {
     uint8_t colTemp = pgm_read_byte(&logoArray[i]);
-    lcdDrawColumn(leftEdge-10+i, 4, colTemp);
+    for (uint8_t j = 0; j<8; j++)
+    {
+      if (reverse == 0)
+      {
+        if (colTemp&0x01) lcdDrawPixel(x+i-10,y+j,ON);
+        else lcdDrawPixel(x+i-10,y+j,OFF);
+      }
+      else
+      {
+        if (colTemp&0x01) lcdDrawPixel(x+i-10,y+j,OFF);
+        else lcdDrawPixel(x+i-10,y+j,ON);
+      }
+      colTemp = colTemp>>1;
+    }
   }
-}
 
-void lcdDrawColumn(uint8_t x, uint8_t y, uint8_t colVal)
-{
-	if (display == SMALL)
-	{
-		if (x<xDim) ks0108bDrawColumn(x, y, colVal);
-	}
 }
 
 void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
@@ -530,4 +551,5 @@ void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 void lcdGetDataBlock(uint8_t x, uint8_t y, uint8_t *buffer)
 {
   if (display == SMALL) ks0108bReadBlock(x, y, buffer);
+  else                  t6963ReadBlock(x, y, buffer);
 }

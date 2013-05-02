@@ -9,12 +9,10 @@ void     ks0108bSetPage(uint8_t address);
 uint8_t  ks0108bReadStatus(void);
 void     ks0108bDisplayOn(void);
 void     ks0108bReset(void);
-void     ks0108bBusyWait(void);
 void     ks0108bSetStartLine(void);
 void     strobeEN(void);
 void     ks0108bClear(void);
 void     ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
-void     ks0108bDrawColumn(uint8_t x, uint8_t y, uint8_t colVal);
 
 #endif
 

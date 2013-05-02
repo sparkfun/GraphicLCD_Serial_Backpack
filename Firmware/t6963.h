@@ -16,15 +16,12 @@ void     t6963WriteData(uint8_t data);
 uint8_t  t6963ReadData(void);
 void     t6963WriteCmd(uint8_t command);
 uint8_t  t6963ReadStatus(void);
-void     t6963ReadBlock(uint8_t address, uint8_t y, uint8_t *buffer);
-void     t6963DisplayOn(void);
-void     t6963Reset(void);
 void     t6963DisplayInit(void);
 void     t6963SetPointer(uint8_t x, uint8_t y);
 void     t6963BusyWait(void);
 void     t6963Clear(void);
 void     t6963DrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
-void     t6963DrawColumn(uint8_t x, uint8_t y, uint8_t colVal);
+void     t6963ReadBlock(uint8_t x, uint8_t y, uint8_t *buffer);
 
 #endif
 

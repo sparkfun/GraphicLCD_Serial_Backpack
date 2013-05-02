@@ -33,15 +33,6 @@ void ks0108bReset(void)
 	_delay_ms(50);
 }
 
-// ks0108bBusyWait()- in theory, it's possible to watch D7 on the LCD to
-//  determine if it's safe to send a command or not. In practice, I'm just
-//  using fixed delays, because everything else about the thing is so
-//  wonky, I'm disinclined to trust this process. I'm leaving this here in
-//  case some other intrepid soul wants to tackle that issue.
-void ks0108bBusyWait(void)
-{
-}
-
 // ks0108bWriteData- write a data byte to the controller. This is only for
 //  writing data that is expected to appear on screen, but then, that's
 //  really *all* this LCD lets you write data for!
@@ -186,10 +177,6 @@ void ks0108bDisplayOn(void)
               (1<<RS));			// Set RS
 }
 
-void ks0108bDisplayOff(void)
-{
-}
-
 void ks0108bSetStartLine(void)
 {
 	PORTC &= ~(	(1<<CS1)|
@@ -224,14 +211,6 @@ void ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
   }
 	ks0108bSetColumn(x);
 	ks0108bWriteData(currentPixelData);
-}
-
-void ks0108bDrawColumn(uint8_t x, uint8_t y, uint8_t colVal)
-{
-	ks0108bSetColumn(x);
-	ks0108bSetPage(y);
-  if (reverse == 1) colVal =~ colVal;
-	ks0108bWriteData(colVal);
 }
 
 void ks0108bClear(void)

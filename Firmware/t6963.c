@@ -5,87 +5,105 @@
 #include "io_support.h"
 #include "t6963.h"
 
-extern volatile uint8_t reverse;
+extern volatile uint8_t reverse; // This is defined in glcdbp.c
 
+// Basic functionality: clearing the display. All we're *really* doing is 
+//  writing a one or zero to all the memory locations for the display.
 void t6963Clear(void)
 {
+  // Begin at the beginning.
   t6963SetPointer(0,0);
-  //t6963WriteCmd(0xb0);
+  // Then, clear out the whole enchilada. We *could* use the auto increment 
+  //  mode here to shorten this up a bit, but meh. That would save us the 
+  //  command write for each loop, and reduce the overall time by probably a 
+  //  few milliseconds.
   for (uint16_t i = 0; i < 2560; i++)
   {
-    //while ((t6963ReadStatus() & 0x04) == 0x00);
     if (reverse) t6963WriteData(0xff);
     else         t6963WriteData(0x00);
-    t6963WriteCmd(0xc0);
+    t6963WriteCmd(0xc0);  // This is the "write-data-then-increment-pointer"
+                          //  command. Useful.
   }
-  //while ((t6963ReadStatus() & 0x04) == 0x00);
-  //t6963WriteCmd(0xb2);
 }
 
-// Write a data byte to the controller. Data lines 7:2 are connected to pins
-//  B7:2 and 1:0 are on D1:0.
+// Write a data byte to the controller.
 void t6963WriteData(uint8_t data)
 {
-  t6963BusyWait();
-  setData(data);
-  PORTC &= ~(1<<CD);
-  _delay_us(1);
-  PORTC &= ~((1<<WR) |
+  t6963BusyWait(); // Wait for the controller to be ready.
+  setData(data);   // Set up the data onto the lines.
+  PORTC &= ~(1<<CD); // This tells the controller that we are sending DATA, not
+                     //  a command
+  _delay_us(1);    // Our processor speed puts us on the hairy edge of the
+                   //  timing, so we pad a things a bit here and there.
+  PORTC &= ~((1<<WR) | // WRITE, not read, and enable the chip.
              (1<<CE));
-  _delay_us(1);
-  PORTC |= (1<<CE);
-  PORTC |= ((1<<CD) |
-            (1<<WR) |
+  _delay_us(1);    // Again, let's keep our hold time legit.
+  PORTC |= (1<<CE); // De-assert the chip.
+  PORTC |= ((1<<CD) | // Finally, put the CD, WR, and RD pins back to a known
+            (1<<WR) | //  state. We'll do this after every basic command.
             (1<<RD));
 }
 
+// Read a data byte from the controller.
 uint8_t t6963ReadData(void)
 {  
-  t6963BusyWait();
+  t6963BusyWait();  // Wait for controller to be ready.
   uint8_t data;
-  PORTC &= ~(1<<CD);
-  _delay_us(1);
-  PORTC &= ~( (1<<CE) |
-              (1<<RD) );
-  _delay_us(1);
-  data = readData();
-  PORTC |= (1<<CE);
-  PORTC |= ((1<<CD) |
+  PORTC &= ~(1<<CD); // This is a DATA transaction.
+  _delay_us(1);      // Hold time.
+  PORTC &= ~( (1<<CE) |  // Enable the chip...
+              (1<<RD) ); // ...and tell it this is a READ.
+  _delay_us(1);      // Hold time.
+  data = readData(); // Fetch the data.
+  PORTC |= (1<<CE);  // De-select the chip.
+  PORTC |= ((1<<CD) | // Go back to our known state for the signal lines.
             (1<<WR) |
             (1<<RD));
   return data;
 }
 
+// Write a command to the controller. Note that "reading" a command is
+//  nonsensical and no ReadCommand() function is provided.
 void t6963WriteCmd(uint8_t command)
 {  
-  t6963BusyWait();
-  setData(command);
-  _delay_us(1);
-  PORTC &= ~(1<<WR);
-  _delay_us(1);
-  PORTC &= ~(1<<CE);
-  _delay_us(1);
-  PORTC |= (1<<CE);
-  PORTC |= ((1<<CD) |
+  t6963BusyWait();   // Wait for controller to be ready.
+  setData(command);  // Set up the data on the lines.
+  _delay_us(1);      // Hold time.
+  PORTC &= ~(1<<WR); // Tell the controller that we're WRITING.
+  _delay_us(1);      // Hold time.
+  PORTC &= ~(1<<CE); // Enable the controller to complete the write.
+  _delay_us(1);      // Hold time, for the write to happen.
+  PORTC |= (1<<CE);  // Deselect the chip.
+  PORTC |= ((1<<CD) | // Put the lines back to known normal state.
             (1<<WR) |
             (1<<RD));
 }
 
+// Read the current chip status. Note that writing the status is not allowed.
 uint8_t t6963ReadStatus(void)
 {  
+  // Astute readers will note that there is *no* busyWait() here! This is the
+  //  one basic operation that does not, indeed, CANNOT, busy wait, since
+  //  busy waiting requires one to read the status of the chip.
   uint8_t status;
-  PORTC &= ~(1<<RD);
-  _delay_us(1);
-  PORTC &= ~(1<<CE);
-  _delay_us(1);
-  status = readData();
-  PORTC |= (1<<CE);
-  PORTC |= ((1<<CD) |
+  PORTC &= ~(1<<RD);  // We're reading.
+  _delay_us(1);       // Hold time.
+  PORTC &= ~(1<<CE);  // Enable the chip.
+  _delay_us(1);       // Hold time.
+  status = readData(); // The status should be on the data pins; fetch it.
+  PORTC |= (1<<CE);   // Deselect the chip.
+  PORTC |= ((1<<CD) | // Housekeeping- put the pins back to known rest state.
             (1<<WR) |
             (1<<RD));
-  return status;
+  return status;      // Return our findings.
 }
 
+// busyWait() spins its wheels until the controller returns that it's ready to
+//  accept a new data or command byte. Note that this is *not* applicable for
+//  the auto-write mode, only for normal command and data read writes.
+//  Bits 1:0 of the status result will both be zero when interaction with the
+//  controller is counterindicated. We want to wait for a nonzero value to
+//  appear there.
 void t6963BusyWait(void)
 {
   uint8_t status;
@@ -164,27 +182,7 @@ void t6963BitSR(uint8_t bit, uint8_t SR)
   uint8_t command = 0xf0;
   command |= SR;
   command |= bit;
-  t6963BusyWait();
   t6963WriteCmd(command);
-  /*
-  // Let's try doing the old-fashioned read-write method.
-  // Start by issuing the "read-but-don't-change-pointer" command.
-  t6963WriteCmd(0xc5);
-  // Now, when we do a readData command, we should get the data at the pointer
-  //  address.
-  uint8_t dataBuffer = t6963ReadData();
-  putBin(dataBuffer);
-  putLine(" ");
-  // Create a bit mask for the setting/clearing of the appropriate bit.
-  uint8_t bitMask = (0x01)<<bit;
-  // Do we want to turn the pixel off, or on?
-  if (SR == PIX_DK) dataBuffer &= ~(bitMask); // Turn pixel OFF
-  else              dataBuffer |= bitMask;    // Turn pixel ON
-  // Write the data to the device...
-  t6963WriteData(dataBuffer);
-  // ...and tell the device to write that data to the current pointer, no
-  //  increment of the pointer.
-  t6963WriteCmd(0xc4);*/
 }
 
 // To draw a single pixel, we need to set the address pointer to the byte
@@ -217,4 +215,45 @@ void t6963DrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
     else
         t6963BitSR(bitIndex, PIX_DK);
   }
+}
+
+// Read an 8x8 block of pixels. Pixels in the t6963 world are in 8-bit blocks,
+//  so we may need to read up to 16 bytes of data and do some shifting around
+//  to get the data we want. The data that we return should be a buffer of
+//  columns; that is, the first byte in the buffer will be (x, y) to (x, y+7),
+//  and the last buffer should be (x+7, y) to (x+7, y+7). This sucks, b/c we
+//  are getting data from the display in the form (x, y) to (x+7, y) and we
+//  need to effectively rotate that matrix 90 degrees, bit by bit.
+void t6963ReadBlock(uint8_t x, uint8_t y, uint8_t *buffer)
+{
+  uint8_t firstColBuffer, secondColBuffer;
+  uint8_t dataBuffer[8];
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    t6963SetPointer(x,y+i); // This sets our pointer to the location containing
+                            //  the first pixel of interest.
+    t6963WriteCmd(0xc1);    // Read data command, increment pointer.
+    firstColBuffer = t6963ReadData(); // Read the data.
+    t6963WriteCmd(0xc5);    // Read data command, don't change pointer.
+    secondColBuffer = t6963ReadData(); // Read the data.
+    // Okay, so now we have the data we're interested in. We'll need to
+    //  bit-shift it; if the data spans two bytes, we need to put those two
+    //  bytes into one.
+    dataBuffer[i] = firstColBuffer<<(x%8);
+    dataBuffer[i] |= secondColBuffer>>(8 - (x%8));
+    putBin(dataBuffer[i]);
+    putLine(" ");
+  }
+  // dataBuffer now contains the block data, with dataBuffer[0] being the top
+  //  row. We need to make buffer[0] contain bit 0 of each of dataBuffer's
+  //  elements, buffer[1] contain bit 1, etc etc.
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    buffer[i] = 0; // Before we start OR-ing stuff into this, make sure the
+                   //  address is clean!
+    for (uint8_t j = 0; j <8; j++)
+    {
+      buffer[i] |= (dataBuffer[j]&(0x01<<j));
+    }
+  } 
 }
