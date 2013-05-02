@@ -4,6 +4,7 @@
 #include "lcd.h"
 #include "ks0108b.h"
 #include "serial.h"
+#include "t6963.h"
 
 extern enum DISPLAY_TYPE display;
 extern uint8_t reverse;
@@ -25,6 +26,12 @@ void lcdConfig(void)
     xDim = 128;
     yDim = 64;
   }
+  else
+  {
+    t6963DisplayInit();
+    xDim = 160;
+    yDim = 128;
+  }
 }
 
 void lcdClearScreen(void)
@@ -33,6 +40,7 @@ void lcdClearScreen(void)
   cursorPos[1] = textOrigin[1];
   textLength = 0;
   if (display == SMALL)	ks0108bClear();
+  else t6963Clear();
 }
 
  // Draws a line between two points p1(p1x,p1y) and p2(p2x,p2y).
@@ -262,6 +270,7 @@ void lcdDrawChar(char printMe)
     case '\b':
     if (textLength > 0) // no text, no backspace!
     {
+      putDec(textLength);
       textLength--;
       // special case: we're at the beginning of a line.
       if (cursorPos[0] == textOrigin[0])
@@ -512,6 +521,10 @@ void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 	{
 		if (x<xDim && y<yDim) ks0108bDrawPixel(x, y, pixel);
 	}
+  else if (display == LARGE)
+  {
+    if (x<xDim && y<yDim) t6963DrawPixel(x, y, pixel);
+  }
 }
 
 void lcdGetDataBlock(uint8_t x, uint8_t y, uint8_t *buffer)

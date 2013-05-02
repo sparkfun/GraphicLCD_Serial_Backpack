@@ -1,24 +1,20 @@
 #ifndef __ks0108b_h
 #define __ks0108b_h
 
-typedef enum SCREEN_SIDE {LEFT, RIGHT, BOTH} SCREEN_SIDE;
-
-void 		ks0108bWriteData(uint8_t data);
-void 		ks0108bReadBlock(uint8_t address, uint8_t y, uint8_t *buffer);
-void 		ks0108bReadSet(uint8_t address);
-uint8_t 	ks0108bReadData(uint8_t x);
-void 		ks0108bSetColumn(uint8_t address);
-void 		ks0108bSetPage(uint8_t address);
-uint8_t 	ks0108bReadStatus(void);
-void		ks0108bDisplayOn(void);
-void 		ks0108bReset(void);
-void 		ks0108bBusyWait(void);
-void		ks0108bSetStartLine(void);
-void		strobeEN(void);
-void 		ks0108bClear(void);
-void 		ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
-void		ks0108bDrawColumn(uint8_t x, uint8_t y, uint8_t colVal);
-void		delay(void);
+void     ks0108bWriteData(uint8_t data);
+void     ks0108bReadBlock(uint8_t address, uint8_t y, uint8_t *buffer);
+uint8_t  ks0108bReadData(uint8_t x);
+void     ks0108bSetColumn(uint8_t address);
+void     ks0108bSetPage(uint8_t address);
+uint8_t  ks0108bReadStatus(void);
+void     ks0108bDisplayOn(void);
+void     ks0108bReset(void);
+void     ks0108bBusyWait(void);
+void     ks0108bSetStartLine(void);
+void     strobeEN(void);
+void     ks0108bClear(void);
+void     ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
+void     ks0108bDrawColumn(uint8_t x, uint8_t y, uint8_t colVal);
 
 #endif
 
@@ -27,7 +23,9 @@ The datasheet isn't great, nor are other explanations I've found, so
 here's my little addition to the muddle:
 
 A 128x64 display is, in fact, treated as TWO 64x64 displays. Each display
-consists of 8 pages, and each page is 8 pixels high by 64 pixels wide.
+consists of 8 pages, and each page is 8 pixels high by 64 pixels wide. The
+CS1 and CS2 lines affect which half of the display is getting written/read-
+asserting CS1 low applies operations to the left half.
 
 Thus, if you set the X address to 0, the Y address to zero, and then write
 b01010101 as display data, you can expect to get a pattern of alternating

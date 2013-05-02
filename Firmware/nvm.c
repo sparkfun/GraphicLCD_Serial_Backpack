@@ -22,7 +22,7 @@ void toggleReverse(void)
 
 uint8_t getReverse(void)
 {
-  return eeprom_read_byte((const uint8_t *)REVERSE);
+  return ~eeprom_read_byte((const uint8_t *)REVERSE);
 }
 
 void setBaudRate(char baudMode)
