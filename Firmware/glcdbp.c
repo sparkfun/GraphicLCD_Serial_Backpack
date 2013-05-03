@@ -91,7 +91,7 @@ int main(void)
   
   // Now wait for one second, for the user to override the stored baud rate
   //  and get back to 115200, if they so desire.
-  //_delay_ms(1000);
+  _delay_ms(1000);
   
   // If the user has send *any* character during the splash time, we should
   //  skip this switch and set our baud rate back to 115200.

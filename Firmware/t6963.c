@@ -255,8 +255,6 @@ void t6963ReadBlock(uint8_t x, uint8_t y, uint8_t *buffer)
     //  bytes into one.
     dataBuffer[i] = firstColBuffer<<(x%8);
     dataBuffer[i] |= secondColBuffer>>(8 - (x%8));
-    putBin(dataBuffer[i]);
-    putLine(" ");
   }
   // dataBuffer now contains the block data, with dataBuffer[0] being the top
   //  row. We need to make buffer[0] contain bit 0 of each of dataBuffer's

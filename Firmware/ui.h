@@ -68,6 +68,15 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
                             points of a diagonal line across the box; pixels
                             inside that box (including the border) will be
                             set to the background color.
+  'CTRL-k'       (0x0b) - Draw a sprite. Expects five bytes- x and y of upper
+                            left corner of the 8x8 sprite (unlike text, there
+                            is no wrapping or edge detection- pixels off screen
+                            won't render, but the sprite may be drawn partly
+                            off screen), the index of the sprite, an angle,
+                            which is defined by an ASCII character ('0' is 
+                            un rotated, '3' is 90 deg clockwise, '6' is upside
+                            down, and '9' is 90 deg anticlockwise), and last is
+                            a zero or non-zero byte for erase or draw pixels.
 */
 
 // These defines associate the above commands with cases in the switch
@@ -85,6 +94,7 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
 #define  DRAW_CIRCLE    0x03
 #define  DRAW_BOX       0x0f
 #define  ERASE_BLOCK    0x05
+#define  DRAW_SPRITE    0x0b
 
 #define  BL_LEVEL OCR1B // Just an alias, to make it more obvious what
                         //  we're doing when we write OCR1B is setting the

@@ -244,14 +244,14 @@ void uiStateMachine(char command)
         if (cmdBufferPtr > 3)
         {
           cmdBufferPtr = 0;
-          if (cmdBuffer[4] == 0) pixel = OFF;
+          if (cmdBuffer[3] == 0) pixel = OFF;
           lcdDrawCircle(cmdBuffer[0], cmdBuffer[1], // center point x,y
                         cmdBuffer[2],               // radius
                         pixel);                     // draw or erase?
           break; // This is where we tell to code to leave the while loop.
         }
       }
-    
+ 
     break;
     
     case DRAW_BOX:    
@@ -291,6 +291,28 @@ void uiStateMachine(char command)
           break; // This is where we tell to code to leave the while loop.
         }
       }
+    break;    
+    
+    case DRAW_SPRITE:      
+    while(1)  // Stay here until we are *told* to leave.
+      {
+        if (bufferSize > 0)
+        {
+          cmdBuffer[cmdBufferPtr++] = serialBufferPop();
+        }
+        // Five-byte command.
+        if (cmdBufferPtr > 4)
+        {
+          cmdBufferPtr = 0;
+          if (cmdBuffer[4] == 0) pixel = OFF;
+          lcdDrawSprite(cmdBuffer[0], cmdBuffer[1], // upper left x,y
+                        cmdBuffer[2],               // sprite index
+                        cmdBuffer[3],               // rotation angle
+                        pixel);                     // draw or erase?
+          break; // This is where we tell to code to leave the while loop.
+        }
+      }
+ 
     break;
     
     default: // if the character that followed the '|' is not a valid command,
