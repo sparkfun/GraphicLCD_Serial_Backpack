@@ -1,5 +1,24 @@
+/***************************************************************************
+lcd.h
+
+Function prototypes for the LCD code. Also includes character maps, the
+ SparkFun logo, and masks and sprites for the sprite drawing funcitonality.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
 #ifndef __lcd_h
 #define __lcd_h
+
+// Yo dawg. Include files in include files is generally a frowned-upon
+//  practice; in this case, I'm doing it because I need the definition of
+//  the PIX_VAL typedef from glcdbp.h and the PROGMEM support provided in
+//  pgmspace.h. Do as I say, not as I do.
 
 #include <avr/pgmspace.h> 
 #include "glcdbp.h"
@@ -119,6 +138,7 @@ static char characterArray[475] PROGMEM = {
 	};
 
 // The SparkFun Logo rendered as a sprite 10 pixels wide and 16 pixels high.
+//  The first ten bytes are the top half, the second ten, the bottom half.
 static char logoArray[20] PROGMEM = {
   0x80, 0xc0, 0x40, 0x0c, 0x3e,
   0xfe, 0xf2, 0xe0, 0xf0, 0xe0,
@@ -261,8 +281,8 @@ static char spriteArray[1024] PROGMEM = {
   };
   
   
-// This is our block of sprite masks. The mask for the sprite should be any
-//  place we want the background to show through.
+// This is our block of sprite masks. The mask for the sprite should be a '1'
+//  anywhere we want the original background to show through.
 static char maskArray[1024] PROGMEM = {
   0xff, 0xc0, 0x81, 0x00, 0x01, 0x00, 0x81, 0xc0, // Pac-man ghost
   0x7e, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7e,

@@ -1,3 +1,20 @@
+/***************************************************************************
+lcd.c
+
+LCD hardware support file for the serial graphical LCD backpack project.
+ This is the API for the LCD; external modules should call the functions
+ provided here rather than calling the device drivers directly. Provides for
+ font rendering, sprite rendering, drawing lines, circles, points and boxes,
+ and erasing blocks of arbitrary size.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
 #include<avr/io.h>
 #include <avr/pgmspace.h> 
 #include "glcdbp.h"
@@ -6,16 +23,29 @@
 #include "serial.h"
 #include "t6963.h"
 
+// These variables are defined in glcdbp.c, and allow us to take actions based
+//  on the type of display and the operating mode (reverse or normal).
 extern enum DISPLAY_TYPE display;
-extern uint8_t reverse;
+extern volatile uint8_t reverse;
 
+// These values allow us to emulate a terminal of arbitrary size. cursorPos is
+//  the x,y pixel of the upper left corner of where the current pixel will be
+//  drawn; textOrigin is the upper left corner of the region of the screen that
+//  text will be drawn within. The right and bottom edges of that region are
+//  bounded by the edge of the display.
 uint8_t  cursorPos[] = {0,0};
 uint8_t  textOrigin[] = {0,0};
 uint16_t textLength = 0; // Number of characters typed since last time we set
-                         //   cursorPos to textOrigin. Facilitates backspace.
+                         //  cursorPos to textOrigin. Facilitates backspace.
+
+// Because we have two different types of display, it's nice to be able to 
+//  not hard-code the dimensions in cases where we may want to set limits or
+//  find the center of the screen.
 uint8_t  xDim = 128;
 uint8_t  yDim = 64;
 
+// Configure functions for the two display types. The details are in the
+//  appropriate driver files.
 void lcdConfig(void)
 {
   if (display == SMALL)
@@ -34,6 +64,7 @@ void lcdConfig(void)
   }
 }
 
+// Reset our text mode, then call the driver specific clear screen command.
 void lcdClearScreen(void)
 {
   cursorPos[0] = textOrigin[0];
@@ -212,6 +243,9 @@ void lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel)
     }
 }
 
+// I found this code on wikipedia- it's the general circle version of
+//  Bresenham's line algorithm. It works great. I'm not going to attempt to
+//  comment it- look it up yourself, lazy.
 void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r, PIX_VAL pixel)
 {
   int x = r, y = 0;
@@ -242,6 +276,7 @@ void lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r, PIX_VAL pixel)
   }
 }
 
+// Draw box is just four lines. It's really just a shortcut.
 void lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel)
 {
 	lcdDrawLine(p1x, p1y, p1x, p2y, pixel);
@@ -250,32 +285,47 @@ void lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel)
 	lcdDrawLine(p2x, p2y, p2x, p1y, pixel);
 }
 
+// This is the by-pixel character rendering function. At this point, there's no
+//  support for the t6963 built-in character generator. Get on that, won't you?
 void lcdDrawChar(char printMe)
 {
-  // So, we'll check our three special cases first: backspace, newline, and
-  //   carriage return.
+  // So, we'll check our three special cases first: backspace and newline.
   switch(printMe)
   {
-    case '\r':
-    while (cursorPos[0] <= (xDim-6)) 
+    case '\r':  // Newline.
+    // For backspace tracking purposes, we want to track how many characters
+    //  we're skipping on this line.
+    while (cursorPos[0] <= (xDim-6))
     {
       cursorPos[0] += 6;
       textLength++;
     }
+    // Then, we want to reset the imaginary cursor to the start of the next
+    //  "line" of text- 8 pixels below the top of the current line.
     cursorPos[0] = textOrigin[0];
     cursorPos[1] += 8;
+    // If we've reached the bottom of the screen, we want to wrap to the top
+    //  of the area that we defined to contain text by setting the text origin
+    //  at some earlier time.
     if (cursorPos[1] >= (yDim-7)) cursorPos[1] = textOrigin[1];
     break;
     
     case '\b':
     if (textLength > 0) // no text, no backspace!
     {
-      putDec(textLength);
-      textLength--;
-      // special case: we're at the beginning of a line.
+      textLength--; // Reduce the number of characters we've written.
+      
+      // Now, we'll move our cursor to the position of the last character we
+      //  printed, so we can delete it.
+      
+      // Special case: we're at the beginning of a line.
+      //  We'll want to go to the end of the previous line and delete what
+      //  we find there.
       if (cursorPos[0] == textOrigin[0])
       {
-        // Even more special: we're at the top of the text block
+        // Even more special: we're at the top of the text block, so we want
+        //  to go to the bottom line of the text block, last character, and
+        //  delete what we find there.
         if (cursorPos[1] == textOrigin[1])
         {
           while (cursorPos[1] < (yDim-8)) cursorPos[1] +=8;
@@ -294,6 +344,7 @@ void lcdDrawChar(char printMe)
       {
         cursorPos[0] -= 6;
       } 
+      
       // Now that our cursor is where it ought to be, we can blank out the
       //   current character location by turning the pixels there off.
       for (uint8_t x = cursorPos[0]; x<cursorPos[0]+5; x++)
@@ -307,26 +358,17 @@ void lcdDrawChar(char printMe)
     break;
   }
   
+  // Special cases handled; we can move on to the general case of characters
+  //  that we can print out. That's everything between space and tilde.
 	if ((printMe >= ' ') && (printMe <= '~'))
 	{
+    // All the characters are stored in a big huge block of the flash memory;
+    //  each one takes five bytes. To find the five bytes in question, we need
+    //  to subtract the offset of ASCII values we can't print (everything
+    //  before ' ') and then multiply by five.
 		uint16_t charOffset = printMe - ' ';
 		charOffset=5*charOffset;
     textLength++;
-    // This section implements a rapid-write- assumes a grid of 6x8 characters.
-		//   I'm leaving it in because it's cool; we need to implement an arbitrary
-    //   character write function for random locations. Maybe we'll find a use
-    //   for it in the future?
-    /*
-    for (uint8_t i = 0; i<5; i++)
-		{
-			uint8_t colTemp = pgm_read_byte(&characterArray[charOffset+i]);
-			lcdDrawColumn(cursorPos[0]*6 + i, cursorPos[1], colTemp);
-		}
-		if (++cursorPos[0]>20)
-		{
-			cursorPos[0] = 0;
-			if (++cursorPos[1]>7) cursorPos[1] = 0;
-		}*/
     
     // This is the arbitrary character generator. For this, cursorPos is the
     //   upper left of the character, and we'll draw it pixel by pixel, one
@@ -377,7 +419,9 @@ void lcdDrawSprite(uint8_t x, uint8_t y, uint8_t sprite, char angle,
       buffer[i-spriteIndex] |= pgm_read_byte(&spriteArray[i]);
     }
     // The buffer now holds the block as it should look. Now we need to print
-    //  it, pixel by pixel, to the screen.
+    //  it, pixel by pixel, to the screen. I'm not going to go into the
+    //  nitty gritty details of how I figured this out- suffice it to say,
+    //  graph paper was involved.
     switch(angle)
     {
       case '0':
@@ -460,7 +504,8 @@ void lcdDrawSprite(uint8_t x, uint8_t y, uint8_t sprite, char angle,
   }
 
 // This function has room for lots of improvement. We draw over the block to
-//   be erased pixel by pixel, but we *could* do it column by column. 
+//   be erased pixel by pixel, but we *could* do it column by column on the
+//   ks0108b or row by row on the t6963.
 void lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 {
   // We want to go from upper left to lower right- if some degenerate user
@@ -491,14 +536,25 @@ void lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
   }
 }
 
+// Draw the SparkFun logo, pixel by pixel. We do this as a splash screen.
 void lcdDrawLogo(void)
 {
+  // x and y are the left and top edges of the logo. We want to center the
+  //  logo; it's 16 pixels tall and 20 pixels wide. Thus, the center of the
+  //  screen is 10 pixels to far to the right and 8 pixels to far down.
   uint8_t x = ((xDim/2)-10);
   uint8_t y  = ((yDim/2)-8);
 
+  // Now we're going to iterate over the bytes in the logo array, starting
+  //  with the top half. The logo is stored with the 10 bytes forming the
+  //  top half first in memory, then the 10 for the bottom half next.
   for (uint8_t i = 0; i<10; i++)
   {
+    // Pull in the next byte of the logo.
     uint8_t colTemp = pgm_read_byte(&logoArray[i]);
+    // Iterate over the bits in that byte, drawing one pixel at a time by
+    //  looking at the lowest bit in the byte, and drawing according to
+    //  that pixel and the 'reverse' flag.
     for (uint8_t j = 0; j<8; j++)
     {
       if (reverse == 0)
@@ -511,10 +567,14 @@ void lcdDrawLogo(void)
         if (colTemp&0x01) lcdDrawPixel(x+i,y+j,OFF);
         else lcdDrawPixel(x+i,y+j,ON);
       }
+      // By right shifting, we keep the LSb the bit we're interested in.
+      //  That way, we only need to mask it with 0x01 and get a zero/nonzero
+      //  reading on it.
       colTemp = colTemp>>1;
     }
   }  
-  y+=8;
+  y+=8;  // Increment y, since we're drawing the lower half of the logo. Then
+         //  we do more or less exactly the same thing.
   for (uint8_t i = 10; i<20; i++)
   {
     uint8_t colTemp = pgm_read_byte(&logoArray[i]);
@@ -536,6 +596,10 @@ void lcdDrawLogo(void)
 
 }
 
+// lcdDrawPixel() is the generic front end to the display-specific drawPixel
+//  commands. We gate the draw to save time- no point in drawing a pixel that
+//  is outside the display area, which can happen in the case of large
+//  circles or lines or boxes.
 void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
 {
 	if (display == SMALL)
@@ -548,6 +612,11 @@ void lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
   }
 }
 
+// Front-end for the display specific readBlock functions. This gets used in
+//  the draw sprite function to allow sprites to be drawn over the existing
+//  background. The data comes back as a block of 8 bytes; bit 0 is the upper
+//  pixel; byte 0 is the leftmost column. Both types of display use this
+//  structure but it's easier for the ks0108b.
 void lcdGetDataBlock(uint8_t x, uint8_t y, uint8_t *buffer)
 {
   if (display == SMALL) ks0108bReadBlock(x, y, buffer);

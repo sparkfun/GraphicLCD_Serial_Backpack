@@ -1,5 +1,21 @@
+/***************************************************************************
+io_support.h
+
+Pin definitions and function prototypes for the io_support.c file.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
+
 #ifndef __io_support_h
 #define __io_support_h
+
+// Pinout definitions.
 
 #define nBL_EN 		2	//PB2 is backlight enable, and is active low
 

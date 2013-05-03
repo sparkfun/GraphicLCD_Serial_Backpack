@@ -1,14 +1,23 @@
+/***************************************************************************
+t6963.h
+
+t6963 controller header file. Function prototypes and constant definitions.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
+
 #ifndef __t6963_h
 #define __t6963_h
 
-//160x128 definitions
-#define WR     0  //PC0
-#define RD     1  //PC1
-#define CE     2  //PC2
-#define CD     3  //PC3
-#define HALT   4  //PC4
-#define RST    5  //PC5
-
+// Defines for the BitSR function. Bit 3 of the command corresponds to SET
+//  make pixel light) or RESET (make pixel dark) the bit referred to by bits
+//  2:0; to make life a little easier, I defined these.
 #define PIX_DK 0x00
 #define PIX_LT 0x08
 
@@ -22,6 +31,7 @@ void     t6963BusyWait(void);
 void     t6963Clear(void);
 void     t6963DrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
 void     t6963ReadBlock(uint8_t x, uint8_t y, uint8_t *buffer);
+void     t6963BitSR(uint8_t bit, uint8_t SR);
 
 #endif
 

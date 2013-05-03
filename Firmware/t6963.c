@@ -1,3 +1,17 @@
+/***************************************************************************
+t6963.c
+
+t6963 controller driver file. Handles the hardware-level interfacing for the
+ t6963 LCD controller.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
 #include <avr/io.h>
 #include <util/delay.h>		// F_CPU is defined in the makefile
 #include "glcdbp.h"

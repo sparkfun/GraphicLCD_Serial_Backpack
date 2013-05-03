@@ -1,3 +1,18 @@
+/***************************************************************************
+ui.h
+
+Header file for the user interface. Describes the various commands, what
+ they do, and how to access them. Establishes some nice, readable constants
+ for the various commands.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
 #ifndef __ui_h
 #define __ui_h
 
@@ -55,6 +70,8 @@
                             set to the background color.
 */
 
+// These defines associate the above commands with cases in the switch
+//  statement in the code in the c file.
 #define  CLEAR_SCREEN   0x00
 #define  RUN_DEMO       0x04
 #define  TOGGLE_BGND    0x12

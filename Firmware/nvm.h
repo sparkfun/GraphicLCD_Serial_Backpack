@@ -1,3 +1,18 @@
+/***************************************************************************
+nvm.h
+
+Function prototypes and memory map for the storage of parameters in
+ non-volatile memory. 
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
+
 #ifndef __nvm_h
 #define __nvm_h
 

@@ -1,11 +1,24 @@
+/***************************************************************************
+interrupts.c
+
+Interrupt definition file for the serial graphical LCD backpack project. The
+ only actual interrupt handler is the serial receive handler. It lives here.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
 #include <AVR/interrupt.h>
-#include "serial.h"
 #include "glcdbp.h"
 
 extern volatile uint8_t 	rxRingBuffer[BUF_DEPTH];
 extern volatile uint16_t 	rxRingHead;
 extern volatile uint16_t	rxRingTail;
-extern volatile uint16_t	bufferSize;
+extern volatile uint8_t	 bufferSize;
 
 // Handler for USART receive interrupts. This is basically just a stack push
 //  for the FIFO we use to store incoming commands. Note that there is no

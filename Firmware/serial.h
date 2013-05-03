@@ -1,6 +1,22 @@
+/***************************************************************************
+serial.h
+
+Serial support- function prototypes and constant defines for baud rates.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
 #ifndef __serial_h
 #define __serial_h
 
+// These are the values for the baud rate generator corresponding to these bit
+//  rates. For more information about bit error percentages and what these
+//  numbers mean, see the datasheet for the processor.
 enum {
 	BR4800		= 416,
 	BR9600  	= 207,

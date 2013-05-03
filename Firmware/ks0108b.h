@@ -1,3 +1,18 @@
+/***************************************************************************
+ks0108b.h
+
+Function prototypes and functional description of the ks0108b controller.
+ Pin definitions are in io_support.h.
+
+02 May 2013 - Mike Hord, SparkFun Electronics
+
+This code is released under the Creative Commons Attribution Share-Alike 3.0
+ license. You are free to reuse, remix, or redistribute it as you see fit,
+ so long as you provide attribution to SparkFun Electronics.
+
+***************************************************************************/
+
+
 #ifndef __ks0108b_h
 #define __ks0108b_h
 
@@ -6,7 +21,6 @@ void     ks0108bReadBlock(uint8_t address, uint8_t y, uint8_t *buffer);
 uint8_t  ks0108bReadData(uint8_t x);
 void     ks0108bSetColumn(uint8_t address);
 void     ks0108bSetPage(uint8_t address);
-uint8_t  ks0108bReadStatus(void);
 void     ks0108bDisplayOn(void);
 void     ks0108bReset(void);
 void     ks0108bSetStartLine(void);
