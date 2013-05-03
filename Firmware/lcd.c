@@ -15,7 +15,7 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
 
 ***************************************************************************/
 
-#include<avr/io.h>
+#include <avr/io.h>
 #include <avr/pgmspace.h> 
 #include "glcdbp.h"
 #include "lcd.h"
@@ -415,7 +415,7 @@ void lcdDrawSprite(uint8_t x, uint8_t y, uint8_t sprite, char angle,
     for (uint16_t i = spriteIndex; i < spriteIndex + 8; i++)
     {
       if (reverse) buffer[i-spriteIndex] ^= 0xff;
-      buffer[i-spriteIndex] &= ~pgm_read_byte(&maskArray[i]);
+      buffer[i-spriteIndex] &= pgm_read_byte(&maskArray[i]);
       buffer[i-spriteIndex] |= pgm_read_byte(&spriteArray[i]);
     }
     // The buffer now holds the block as it should look. Now we need to print

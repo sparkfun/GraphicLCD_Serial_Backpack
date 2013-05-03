@@ -69,6 +69,7 @@ SRC +=  lcd.c
 SRC +=  io_support.c
 SRC +=  ui.c
 SRC +=  nvm.c
+SRC +=  demo.c
 		
 
 

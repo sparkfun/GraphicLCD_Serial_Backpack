@@ -75,3 +75,14 @@ uint8_t readData(void)
   
   return data;
 }
+
+// I've noticed that the ks0108b displays don't always play well with their
+//  data pins, and to avoid contention and the assorted ugly crap, I've
+//  added this function to put the data pins in a hi-z state. I suppose I
+//  could just call readData(), but this is easier to read.
+void hiZDataPins(void)
+{
+  // Set the port direction to input.
+  DDRB &= ~(0x03);
+  DDRD &= ~(0xFC);
+}

@@ -17,6 +17,7 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
 #include "serial.h"
 #include "glcdbp.h"
 #include "nvm.h"
+#include "demo.h"
 
 // These variables are defined in glcdbp.c, and are used for the input buffer
 //   from the serial port. We need to be able to access them here because we'll
@@ -49,6 +50,7 @@ void uiStateMachine(char command)
   PIX_VAL pixel = ON;
   // Now, let's figure out where to start, based on our command input. There's
   //  a lot of good information about the switch constants in the header file.
+
   switch(command)
   {
     case CLEAR_SCREEN:  // Easy and fairly self-explanatory.
@@ -56,7 +58,13 @@ void uiStateMachine(char command)
     break;
     
     case RUN_DEMO:      // Some sort of wonky song-and-dance to show off.
-    // to be implemented
+    lcdClearScreen();
+    demo();
+    reverse ^= 0x01;
+    lcdClearScreen();
+    demo();
+    reverse ^= 0x01;
+    lcdClearScreen();
     break;
     
     case TOGGLE_BGND:   // Switch between reverse mode and normal mode.

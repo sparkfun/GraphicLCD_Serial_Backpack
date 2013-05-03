@@ -38,5 +38,6 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
 void    ioInit(void);
 void    setData(uint8_t data);
 uint8_t readData(void);
+void    hiZDataPins(void);
 
 #endif

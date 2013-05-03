@@ -26,7 +26,7 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
               //  datasheet, this shouldn't need to be more
               //  than 1000ns; experimentation has put the
               //  lie to that. Value in microseconds.
-#define R_DELAY 8 // This delay is the delay between EN and
+#define R_DELAY 10 // This delay is the delay between EN and
               //  data reads, and between EN changes around
               //  data reads. Again, it shouldn't *need* to
               //  be this long, but the datasheet speaks
@@ -71,6 +71,7 @@ void ks0108bWriteData(uint8_t data)
         (1<<CS1)|    //  rest state of all high.
         (1<<CS2)|
         (1<<EN));
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
   // The act of writing a data byte to the display causes the display's
   //  internal pointer to increment. We need to update our pointer to
   //  account for that, but if the update pushes our pointer past the
@@ -168,6 +169,7 @@ void ks0108bSetColumn(uint8_t address)
   strobeEN();
   PORTC |=  ( (1<<R_W)|
               (1<<RS));
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
 }
 
 // Select the page (meta-row) that we're currently looking at. This puts BOTH
@@ -186,6 +188,7 @@ void ks0108bSetPage(uint8_t address)
   strobeEN();
   PORTC |= (  (1<<R_W)|
               (1<<RS));
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
 }
 
 
@@ -199,6 +202,7 @@ void ks0108bDisplayOn(void)
   strobeEN();
   PORTC |= ( (1<<R_W)|      // Set R_W
              (1<<RS));      // Set RS
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
 }
 
 // It's possible, if kinda weird, to tell the ks0108b that the start line is
@@ -218,6 +222,7 @@ void ks0108bSetStartLine(void)
               (1<<RS)| 
               (1<<CS1)|
               (1<<CS2));
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
 }
 
 // This is the display-specific pixel draw command. Pretty simple- located the

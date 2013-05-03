@@ -14,11 +14,6 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
 
 ***************************************************************************/
 
-/*
-TO-DO:
-- Add demo mode.
-*/
-
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "glcdbp.h"
@@ -134,7 +129,7 @@ int main(void)
   // This is a troubleshooting message, to let us know that setup has
   //  completed and the display is ready to rock. It is commented in the
   //  production version of the code but left in place.
-  putLine("Ready to serve!");
+  // putLine("Ready to serve!");
   
   // Under normal circumstances, we'll spend *all* our time cycling through
   //  this loop, parsing input from the serial port. The serial data is
