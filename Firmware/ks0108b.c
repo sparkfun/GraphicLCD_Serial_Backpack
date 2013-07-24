@@ -50,28 +50,92 @@ void ks0108bReset(void)
   _delay_ms(50);
 }
 
+// Enable the display. Should only need to do this at startup time.
+void ks0108bDisplayOn(void)
+{
+  // Data lines should be 0x3F for display enable.
+  PORTC &= ~( (1<<R_W)|      // Clear R_W (Write mode)
+              (1<<RS));      // Clear RS (Instruction mode)
+  setData(0x3F);
+  strobeEN();
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
+  setPinsDefault();
+}
+
+// It's possible, if kinda weird, to tell the ks0108b that the start line is
+//  not the top line of the display. We're not going to truck with that crap-
+//  we'll just start at the top and call it good.
+void ks0108bSetStartLine(void)
+{
+  PORTC &= ~( (1<<CS1)| // Let's hit both chips.
+              (1<<CS2)|
+              (1<<R_W)|  // Clear R_W (Write mode)
+              (1<<RS));  // Clear RS (Register select for
+                         //  enable register)
+  // Data lines should be 0xC0 for set start line to 0.
+  setData(0xC0);
+  strobeEN();
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
+  setPinsDefault();
+}
+
+// As mentioned elsewhere, this display is divided into 8 meta-rows (or pages,
+//  to use the datasheet nomenclature), and within each of those pages are 32
+//  columns. This function points us to one of those columns. We'll figure out
+//  which half of the screen we're on in the next stage or our operation- that
+//  will determine which chip select line we need to assert, since we don't
+//  need to assert a CS line here (it wouldn't help anyway).
+void ks0108bSetColumn(uint8_t address)
+{  
+  PORTC &= ~( (1<<R_W)|
+              (1<<RS));
+  // For Y writes, bits 7:6 of the data bus should be set to 01. We should
+  //  just make sure that's done before we do anything else...
+  column = address;
+  address = (address | 0x40) & 0x7F;
+  setData(address);
+  strobeEN();
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
+  setPinsDefault();
+}
+
+// Select the page (meta-row) that we're currently looking at. This puts BOTH
+//  halves of the screen on the same page, so writes that proceed across from
+//  L to R can continue across the page boundary without interruption.
+void ks0108bSetPage(uint8_t address)
+{  
+  // Now, on to the actual port manipulations needed to make this happen.
+  PORTC &= ~( (1<<R_W)|      // Clear R_W (Write mode)
+              (1<<RS));      // Clear RS (Register select for
+                             //  address registers)
+  // For X writes, bits 7:3 of the data bus should be set to 10111. We should
+  //  just make sure that's done before we do anything else...
+  address = (address | 0xB8) & 0xBF;
+  setData(address);
+  strobeEN();
+  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
+  setPinsDefault();
+}
 // ks0108bWriteData- write a data byte to the controller. This is only for
 //  writing data that is expected to appear on screen, but then, that's
 //  really *all* this LCD lets you write data for!
 void ks0108bWriteData(uint8_t data)
-{
+{  
+  // By tracking what column we're writing to, we can avoid having to
+  //  do any weird "which side am I on" logic, keeping the interface more
+  //  intuitive.
+  if (column < 64)   PORTC &= ~( (1<<CS1) |
+                                 (1<<R_W));
+  else               PORTC &= ~( (1<<CS2) |
+                                 (1<<R_W));
+  
   // setData() is a function which abstracts the fact that the data lines
   //  to the LCD are not on the same port.
   setData(data);
   
-  // By tracking what column we're writing to, we can avoid having to
-  //  do any weird "which side am I on" logic, keeping the interface more
-  //  intuitive.
-  if (column > 63)   PORTC &= ~( (1<<CS2) );
-  else               PORTC &= ~( (1<<CS1) );
-  // R_W goes low, for a write.
-  PORTC &= ~( (1<<R_W));
   strobeEN();        // Twiddle EN to latch the data.
-  PORTC |=  ( (1<<R_W)|  // Reset all our pins to the default
-        (1<<CS1)|    //  rest state of all high.
-        (1<<CS2)|
-        (1<<EN));
   hiZDataPins();     // Avoid bus contention with the ks0108b driver.
+  setPinsDefault();
   // The act of writing a data byte to the display causes the display's
   //  internal pointer to increment. We need to update our pointer to
   //  account for that, but if the update pushes our pointer past the
@@ -83,6 +147,59 @@ void ks0108bWriteData(uint8_t data)
     column = 0;
     ks0108bSetColumn(0);
   }
+}
+
+// Read a column of pixel data. The operation is basically thus:
+//   1. Pull one CS line and EN low
+//   2. Pull EN high.
+//   3. Pull EN low.
+//   4. Pull EN high.
+//   5. Data is available to be read.
+//   6. Reset signal lines to rest state.
+uint8_t ks0108bReadData(uint8_t x)
+{  
+  uint8_t data;
+  
+  if (x<64)  // Are we on the left half of the display?
+  {  
+    PORTC &= ~(1<<CS1);
+  }
+  else       // Or the right half of the display?
+  {  
+    PORTC &= ~(1<<CS2);
+  }
+  // The number of twiddles of EN is...bizarre. This was established via
+  //  experimentation, rather than through any actual data sheet content.
+  _delay_us(R_DELAY);
+  PORTC |= (1<<EN);
+  _delay_us(R_DELAY);
+  PORTC &= ~(1<<EN);
+  _delay_us(R_DELAY);
+  PORTC |= (1<<EN);  
+  _delay_us(R_DELAY);
+  data = readData();  
+  PORTC &= ~(1<<EN);
+  _delay_us(R_DELAY);
+  setPinsDefault();
+  return data;
+}
+
+// Clear is janky- set x and y to zero and write across the screen.
+void ks0108bClear(void)
+{
+  uint8_t clearVal = 0;
+  if (reverse == 1) clearVal = 0xFF;
+  for (uint8_t y = 0; y<8; y++)
+  {
+    ks0108bSetPage(y);
+    ks0108bSetColumn(0);
+    for (uint8_t x = 0; x<128; x++)
+    {
+      ks0108bWriteData(clearVal);
+    }
+  }
+  ks0108bSetPage(0);
+  ks0108bSetColumn(0);
 }
 
 // ks0108bReadBlock()- reads an 8x8 block of arbitrary pixels from the display.
@@ -109,120 +226,6 @@ void ks0108bReadBlock(uint8_t x, uint8_t y, uint8_t *buffer)
   {
     buffer[i] |= ks0108bReadData(x+i)>>(8-secondRowPixels);
   }
-}
-
-// Read a column of pixel data. The operation is basically thus:
-//   1. Pull one CS line and EN low
-//   2. Pull EN high.
-//   3. Pull EN low.
-//   4. Pull EN high.
-//   5. Data is available to be read.
-//   6. Reset signal lines to rest state.
-uint8_t ks0108bReadData(uint8_t x)
-{  
-  uint8_t data;
-  
-  if (x<64)  // Are we on the left half of the display?
-  {  
-    PORTC &= ~( (1<<CS1)|
-                (1<<EN) );
-  }
-  else       // Or the right half of the display?
-  {  
-    PORTC &= ~( (1<<CS2)|
-                (1<<EN) );
-  }
-  // The number of twiddles of EN is...bizarre. This was established via
-  //  experimentation, rather than through any actual data sheet content.
-  _delay_us(R_DELAY);
-  PORTC |= (1<<EN);
-  _delay_us(R_DELAY);
-  PORTC &= ~(1<<EN);
-  _delay_us(R_DELAY);
-  PORTC |= (1<<EN);  
-  _delay_us(R_DELAY);
-  data = readData();  
-  PORTC &= ~(1<<EN);
-  _delay_us(R_DELAY);
-  PORTC |= ( (1<<CS1)|
-             (1<<CS2)|
-             (1<<EN) );  
-  _delay_us(R_DELAY);
-  return data;
-}
-
-// As mentioned elsewhere, this display is divided into 8 meta-rows (or pages,
-//  to use the datasheet nomenclature), and within each of those pages are 32
-//  columns. This function points us to one of those columns. We'll figure out
-//  which half of the screen we're on in the next stage or our operation- that
-//  will determine which chip select line we need to assert, since we don't
-//  need to assert a CS line here (it wouldn't help anyway).
-void ks0108bSetColumn(uint8_t address)
-{  
-  PORTC &= ~( (1<<R_W)|
-              (1<<RS));
-  // For Y writes, bits 7:6 of the data bus should be set to 01. We should
-  //  just make sure that's done before we do anything else...
-  column = address;
-  address = (address | 0x40) & 0x7F;
-  setData(address);
-  strobeEN();
-  PORTC |=  ( (1<<R_W)|
-              (1<<RS));
-  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
-}
-
-// Select the page (meta-row) that we're currently looking at. This puts BOTH
-//  halves of the screen on the same page, so writes that proceed across from
-//  L to R can continue across the page boundary without interruption.
-void ks0108bSetPage(uint8_t address)
-{  
-  // Now, on to the actual port manipulations needed to make this happen.
-  PORTC &= ~( (1<<R_W)|      // Clear R_W (Write mode)
-              (1<<RS));      // Clear RS (Register select for
-                             //  address registers)
-  // For X writes, bits 7:3 of the data bus should be set to 10111. We should
-  //  just make sure that's done before we do anything else...
-  address = (address | 0xB8) & 0xBF;
-  setData(address);
-  strobeEN();
-  PORTC |= (  (1<<R_W)|
-              (1<<RS));
-  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
-}
-
-
-// Enable the display. Should only need to do this at startup time.
-void ks0108bDisplayOn(void)
-{
-  // Data lines should be 0x3F for display enable.
-  PORTC &= ~( (1<<R_W)|      // Clear R_W (Write mode)
-              (1<<RS));      // Clear RS (Instruction mode)
-  setData(0x3F);
-  strobeEN();
-  PORTC |= ( (1<<R_W)|      // Set R_W
-             (1<<RS));      // Set RS
-  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
-}
-
-// It's possible, if kinda weird, to tell the ks0108b that the start line is
-//  not the top line of the display. We're not going to truck with that crap-
-//  we'll just start at the top and call it good.
-void ks0108bSetStartLine(void)
-{
-  PORTC &= ~( (1<<CS1)| // Let's hit both chips.
-              (1<<CS2)|
-              (1<<R_W)|  // Clear R_W (Write mode)
-              (1<<RS));  // Clear RS (Register select for
-                         //  enable register)
-  // Data lines should be 0xC0 for set start line to 0.
-  setData(0xC0);
-  strobeEN();
-  PORTC |= (  (1<<R_W)|
-              (1<<RS)| 
-              (1<<CS1)|
-              (1<<CS2));
-  hiZDataPins();     // Avoid bus contention with the ks0108b driver.
 }
 
 // This is the display-specific pixel draw command. Pretty simple- located the
@@ -255,24 +258,6 @@ void ks0108bDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel)
   ks0108bWriteData(currentPixelData);
 }
 
-// Clear is janky- set x and y to zero and write across the screen.
-void ks0108bClear(void)
-{
-  uint8_t clearVal = 0;
-  if (reverse == 1) clearVal = 0xFF;
-  for (uint8_t y = 0; y<8; y++)
-  {
-    ks0108bSetPage(y);
-    ks0108bSetColumn(0);
-    for (uint8_t x = 0; x<128; x++)
-    {
-      ks0108bWriteData(clearVal);
-    }
-  }
-  ks0108bSetPage(0);
-  ks0108bSetColumn(0);
-}
-
 // I found myself typing these lines over and over, so I made them a little
 //  function of their very own.
 void strobeEN(void)
@@ -282,4 +267,16 @@ void strobeEN(void)
   _delay_us(E_DELAY);
   PORTC &= ~(1 << EN);      // Clear EN (Activate write)
   _delay_us(E_DELAY);
+}
+
+// Everytime we finish up a transfer, we want to reset the pins to a default
+//  state. This state is all pins high EXCEPT EN. We want to leave EN low
+//  until we need to twiddle it.
+void setPinsDefault(void)
+{
+  PORTC |= (  (1<<RS)| 
+              (1<<CS1)|
+              (1<<CS2)|
+              (1<<R_W));
+  PORTC &= ~(1<<EN);
 }
