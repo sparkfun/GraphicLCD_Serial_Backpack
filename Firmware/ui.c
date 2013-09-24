@@ -187,9 +187,9 @@ void uiStateMachine(char command)
           //   makes sense. It only makes sense if it is at least 8 pixels from
           //   the bottom edge of the screen. Use the yDim variable from lcd.c
           //   to make sure we don't botch that. Ignore invalid input.
-          if (cmdBuffer[1] <= (yDim-8))
+          if (cmdBuffer[0] <= (yDim-8))
           {
-            textOrigin[1] = cmdBuffer[1];
+            textOrigin[1] = cmdBuffer[0];
             cursorPos[1] = textOrigin[1];
             textLength = 0;
           }

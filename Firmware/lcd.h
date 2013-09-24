@@ -26,9 +26,9 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
 void		lcdConfig(void);
 void		lcdClearScreen(void);
 void 		lcdDrawPixel(uint8_t x, uint8_t y, PIX_VAL pixel);
-void 		lcdDrawLine(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel);
+void 		lcdDrawLine(uint8_t p1x, uint8_t p1y, uint8_t p2x, uint8_t p2y, PIX_VAL pixel);
 void 		lcdDrawCircle(uint8_t x0, uint8_t y0, uint8_t r, PIX_VAL pixel);
-void		lcdDrawBox(int8_t p1x, int8_t p1y, int8_t p2x, int8_t p2y, PIX_VAL pixel);
+void		lcdDrawBox(uint8_t p1x, uint8_t p1y, uint8_t p2x, uint8_t p2y, PIX_VAL pixel);
 void		lcdDrawChar(char printMe);
 void    lcdDrawLogo(void);
 void    lcdEraseBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
