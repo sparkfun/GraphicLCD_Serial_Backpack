@@ -14,10 +14,7 @@ This code is released under the Creative Commons Attribution Share-Alike 3.0
 #ifndef __glcdbp_h
 #define __glcdbp_h
 
-#define BUF_DEPTH 32  // Ring buffer size. Originally set to 416(!), the
-                      //  controller is fast enough to keep up with almost
-                      //  any command even at 115200. Buffer overflow not an
-                      //  issue.
+#define BUF_DEPTH 256 // Ring buffer size. Originally set to 416.
 
 // These typedefs will be used throughout the project to track the type of
 //  display we're using as well as whether we want the pixel(s) at the heart
