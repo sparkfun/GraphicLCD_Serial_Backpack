@@ -1,0 +1,36 @@
+#######################################
+# Syntax Coloring Map For Twitter
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+LCD	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+printStr	KEYWORD2
+printNum	KEYWORD2
+nextLine	KEYWORD2
+clearScreen	KEYWORD2
+toggleReverseMode	KEYWORD2
+toggleSplash	KEYWORD2
+setBacklight	KEYWORD2
+setBaud	KEYWORD2
+restoreDefaultBaud	KEYWORD2
+setX	KEYWORD2
+setY	KEYWORD2
+setHome	KEYWORD2
+demo	KEYWORD2
+setPixel	KEYWORD2
+drawLine	KEYWORD2
+drawBox	KEYWORD2
+drawCircle	KEYWORD2
+eraseBlock	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
