@@ -246,35 +246,35 @@ void LCD::setPixel(int x, int y, int set)
 
 }
 //-------------------------------------------------------------------------------------------
-void LCD::drawLine(int x1, int y1, int x2, int y2, int set)
+void LCD::drawLine(byte x1, byte y1, byte x2, byte y2, byte set)
 {
   //draws a line from two given points. You can set and reset just as the pixel function. 
   serial.write(0x7C);
   serial.write(0x0C);//CTRL l 
 
-  if(x1 == 0)
-  serial.write((byte)0);
-  else
+  //if(x1 == 0)
+  //serial.write(0x00);
+  //else
   serial.write(x1);
 
-  if(y1 == 0)
-  serial.write((byte)0);
-  else
+  //if(y1 == 0)
+  //serial.write((byte)0);
+  //else
   serial.write(y1);
 
-  if(x2 == 0)
-  serial.write((byte)0);
-  else
+  //if(x2 == 0)
+  //serial.write((byte)0);
+  //else
   serial.write(x2);
 
-  if(y2 == 0)
-  serial.write((byte)0);
-  else
+  //if(y2 == 0)
+ // serial.write((byte)0);
+  //else
   serial.write(y2);
 
-  if(set == 0)
-  serial.write((byte)0);
-  else
+  //if(set == 0)
+  //serial.write((byte)0);
+  //else
   serial.write(0x01);
 
   delay(10);
