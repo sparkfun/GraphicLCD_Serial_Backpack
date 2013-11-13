@@ -69,7 +69,7 @@ LCD.printStr("Commence Arduino Demo Mode");
 delay(1500);
 
 //Each of these functions is explained in great detail below. 
-/*helloWorld();
+helloWorld();
 
 reverseModeDemo();
 
@@ -88,7 +88,7 @@ pixelDemo();
 lineDemo();
 
 boxDemo();
-*/
+
 circleDemo();
 
 eraseDemo();
