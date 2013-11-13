@@ -56,7 +56,7 @@ void LCD::toggleSplash()
   serial.write(0x13); //CTRL s
 }
 //-------------------------------------------------------------------------------------------
-void LCD::setBacklight(int duty)
+void LCD::setBacklight(byte duty)
 {
   //changes the back light intensity, range is 0-100.
   serial.write(0x7C);
@@ -64,7 +64,7 @@ void LCD::setBacklight(int duty)
   serial.write(duty); //send a value of 0 - 100
 }
 //-------------------------------------------------------------------------------------------
-void LCD::setBaud(char baud)
+void LCD::setBaud(byte baud)
 {
   //changes the baud rate.
   serial.write(0x7C);
@@ -169,15 +169,12 @@ void LCD::demo()
   serial.write(0x04);//CTRL d
 }
 //-------------------------------------------------------------------------------------------
-void LCD::setX(char posX) //0-127 or 0-159 pixels
+void LCD::setX(byte posX) //0-127 or 0-159 pixels
 {
   //Set the X position 
   serial.write(0x7C);
   serial.write(0x18);//CTRL x
-  if(posX == 0)
-    serial.write((byte)0);//can't send LCD.write(0) or LCD.write(0x00) because it's interprestted as a NULL
-  else
-    serial.write(posX);
+  serial.write(posX);
 
 //characters are 8 pixels tall x 6 pixels wide
 //The top left corner of a char is where the x/y value will start its print
@@ -199,15 +196,12 @@ void LCD::setX(char posX) //0-127 or 0-159 pixels
 //    ______
 }
 //-------------------------------------------------------------------------------------------
-void LCD::setY(char posY)//0-63 or 0-127 pixels
+void LCD::setY(byte posY)//0-63 or 0-127 pixels
 {
   //Set the y position 
   serial.write(0x7C);
   serial.write(0x19);//CTRL y
-  if(posY == 0)
-    serial.write((byte)0);//can't send LCD.write(0) or LCD.write(0x00) because it's interprestted as a NULL
-  else
-    serial.write(posY);
+  serial.write(posY);
   
 }
 //-------------------------------------------------------------------------------------------
@@ -222,28 +216,14 @@ void LCD::setHome()
   serial.write((byte)0);//set y back to 0
 }
 //-------------------------------------------------------------------------------------------
-void LCD::setPixel(int x, int y, int set)
+void LCD::setPixel(byte x, byte y, byte set)
 {
   serial.write(0x7C);
   serial.write(0x10);//CTRL p
-
-  if(x == 0)
-	serial.write((byte)0);
-  else 
-	serial.write(x);
-	
-  if(y == 0)
-	serial.write((byte)0);
-  else 
-	serial.write(y);
-	
-  if(set == 0)
-	serial.write((byte)0);
-  else 
-	serial.write(0x01);
-
+  serial.write(x);
+  serial.write(y);
+  serial.write(0x01);
   delay(10);
-
 }
 //-------------------------------------------------------------------------------------------
 void LCD::drawLine(byte x1, byte y1, byte x2, byte y2, byte set)
@@ -251,129 +231,53 @@ void LCD::drawLine(byte x1, byte y1, byte x2, byte y2, byte set)
   //draws a line from two given points. You can set and reset just as the pixel function. 
   serial.write(0x7C);
   serial.write(0x0C);//CTRL l 
-
-  //if(x1 == 0)
-  //serial.write(0x00);
-  //else
   serial.write(x1);
-
-  //if(y1 == 0)
-  //serial.write((byte)0);
-  //else
   serial.write(y1);
-
-  //if(x2 == 0)
-  //serial.write((byte)0);
-  //else
   serial.write(x2);
-
-  //if(y2 == 0)
- // serial.write((byte)0);
-  //else
   serial.write(y2);
-
-  //if(set == 0)
-  //serial.write((byte)0);
-  //else
   serial.write(0x01);
-
   delay(10);
 	
 }
 //-------------------------------------------------------------------------------------------
-void LCD::drawBox(int x1, int y1, int x2, int y2, int set)
+void LCD::drawBox(byte x1, byte y1, byte x2, byte y2, byte set)
 {
   //draws a box from two given points. You can set and reset just as the pixel function. 
   serial.write(0x7C);
   serial.write(0x0F);//CTRL o 
-
-  if(x1 == 0)
-  serial.write((byte)0);
-  else
   serial.write(x1);
-
-  if(y1 == 0)
-  serial.write((byte)0);
-  else
   serial.write(y1);
-
-  if(x2 == 0)
-  serial.write((byte)0);
-  else
   serial.write(x2);
-
-  if(y2 == 0)
-  serial.write((byte)0);
-  else
   serial.write(y2);
-
-  if(set == 0)
-  serial.write((byte)0);
-  else
   serial.write(0x01);
-
   delay(10);
 	
 }
 //-------------------------------------------------------------------------------------------
-void LCD::drawCircle(int x, int y, int rad, int set)
+void LCD::drawCircle(byte x, byte y, byte rad, byte set)
 {
-	//draws a circle from a point x,y with a radius of rad. 
-	//Circles can be drawn off-grid, but only those pixels that fall within the 
-	//display boundaries will be written.
+//draws a circle from a point x,y with a radius of rad. 
+//Circles can be drawn off-grid, but only those pixels that fall within the 
+//display boundaries will be written.
   serial.write(0x7C);
   serial.write(0x03);//CTRL c 
-
-  if(x == 0)
-  serial.write((byte)0);
-  else
   serial.write(x);
-
-  if(y == 0)
-  serial.write((byte)0);
-  else
   serial.write(y);
-
-  if(rad == 0)
-  serial.write((byte)0);
-  else
   serial.write(rad);
-
-  if(set == 0)
-  serial.write((byte)0);
-  else
   serial.write(0x01);
-
   delay(10);
 	
 }
 //-------------------------------------------------------------------------------------------
-void LCD::eraseBlock(int x1, int y1, int x2, int y2)
+void LCD::eraseBlock(byte x1, byte y1, byte x2, byte y2)
 {
   //This is just like the draw box command, except the contents of the box are erased to the background color
   serial.write(0x7C);
   serial.write(0x05);//CTRL e 
-
-  if(x1 == 0)
-  serial.write((byte)0);
-  else
   serial.write(x1);
-
-  if(y1 == 0)
-  serial.write((byte)0);
-  else
   serial.write(y1);
-
-  if(x2 == 0)
-  serial.write((byte)0);
-  else
   serial.write(x2);
-
-  if(y2 == 0)
-  serial.write((byte)0);
-  else
   serial.write(y2);
-
   delay(10);
 	
 }

@@ -22,18 +22,18 @@ class LCD
 	void clearScreen();
     void toggleReverseMode();
 	void toggleSplash();
-	void setBacklight(int duty);
-	void setBaud(char baud);
+	void setBacklight(byte duty);
+	void setBaud(byte baud);
 	void restoreDefaultBaud();
-  	void setX(char posX);
-	void setY(char posY);
+  	void setX(byte posX);
+	void setY(byte posY);
 	void setHome();
 	void demo();
-	void setPixel(int x, int y, int set);
+	void setPixel(byte x, byte y, byte set);
 	void drawLine(byte x1, byte y1, byte x2, byte y2, byte set);
-	void drawBox(int x1, int y1, int x2, int y2, int set);
-	void drawCircle(int x, int y, int rad, int set);
-	void eraseBlock(int x1, int y1, int x2, int y2);
+	void drawBox(byte x1, byte y1, byte x2, byte y2, byte set);
+	void drawCircle(byte x, byte y, byte rad, byte set);
+	void eraseBlock(byte x1, byte y1, byte x2, byte y2);
 	
 	
 	private:
