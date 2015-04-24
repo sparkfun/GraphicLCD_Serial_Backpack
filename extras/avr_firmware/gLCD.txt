@@ -1,0 +1,17 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="2">
+            <File firstVisibleLine="305" xOffset="0" scrollWidth="1064" startPos="11364" endPos="11364" selMode="0" lang="C" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\OldFirmwareReference\main.c" />
+            <File firstVisibleLine="39" xOffset="0" scrollWidth="1184" startPos="2008" endPos="2008" selMode="0" lang="Makefile" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\Makefile" />
+            <File firstVisibleLine="32" xOffset="0" scrollWidth="736" startPos="2200" endPos="2200" selMode="0" lang="C" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\glcdbp.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="544" startPos="410" endPos="410" selMode="0" lang="C++" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\glcdbp.h" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="288" startPos="194" endPos="38" selMode="0" lang="C++" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\t6963.h" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="728" startPos="2417" endPos="2417" selMode="0" lang="C" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\t6963.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="280" startPos="151" endPos="151" selMode="0" lang="C++" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\serial.h" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="704" startPos="223" endPos="223" selMode="0" lang="C" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\serial.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="216" startPos="51" endPos="51" selMode="0" lang="C" encoding="-1" filename="C:\Dropbox\Projects\GraphicLCD_Serial_Backpack\Firmware\interrupts.c" />
+            <File firstVisibleLine="480" xOffset="0" scrollWidth="624" startPos="0" endPos="0" selMode="0" lang="C++" encoding="-1" filename="C:\WinAVR-20100110\avr\include\avr\eeprom.h" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>
