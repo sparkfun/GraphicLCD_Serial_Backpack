@@ -1,25 +1,46 @@
-Graphic LCD Serial Backpack
-============================
-[![Graphic LCD Serial Backpack](https://dlnmh9ip6v2uc.cloudfront.net//images/products/9/3/5/2/09352-01.jpg)
-*Graphic LCD Serial Backpack(LCD-09352)*](https://www.sparkfun.com/products/9352)
+SparkFun Graphic LCD Serial Backpack Arduino Library
+========================================
 
-The Graphic LCD Serial Backpack interfaces to either the [160x128 pixel Huge Graphic LCD](https://www.sparkfun.com/products/8799) or
-the [128x64 pixel display](https://www.sparkfun.com/products/710). The backpack will allow you to write text, draw lines, circles and boxes, 
-set and reset individual pixels, and erase specific blocks of the display. 
+![SparkFun Graphic LCD Serial Backpack](https://cdn.sparkfun.com//assets/parts/2/9/2/2/09352-01.jpg)
+
+[*SparkFun Graphic LCD Serial Backpack*](https://www.sparkfun.com/products/9352)
 
 Repository Contents
 -------------------
-* **/Firmware** - The firmware that comes installed on the backpack
-* **/Hardware** - All Eagle design files (.brd, .sch)
 
+* **/examples** - Example sketches for the library (.ino). Run these from the Arduino IDE. 
+* **/extras** - Additional documentation for the user. These files are ignored by the IDE. 
+* **/src** - Source files for the library (.cpp, .h).
+* **keywords.txt** - Keywords from this library that will be highlighted in the Arduino IDE. 
+* **library.properties** - General library properties for the Arduino package manager. 
 
-Product Versions
-----------------
-* [LCD-09352](https://www.sparkfun.com/products/9352)- Graphic Serial LCD Backpack by itself
-* [LCD-09351](https://www.sparkfun.com/products/9351) - Serial Graphic LCD 128x64 (LCD + backpack)
-* [LCD-08884](https://www.sparkfun.com/products/8884) - Serial Graphic LCD 160x128 (LCD + backpack)
+Documentation
+--------------
+
+* **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
+* **[Product Repository](https://github.com/sparkfun/GraphicLCD_Serial_Backpack)** - Main repository (including hardware files) for the SparkFun Graphic LCD Serial Backpack.
+* **[Hookup Guide](https://learn.sparkfun.com/tutorials/serial-graphic-lcd-hookup/?_ga=1.12355956.1126191215.1366741676)** - Basic hookup guide for the SparkFun Graphic LCD Serial Backpack.
+
+Products that use this Library 
+---------------------------------
+
+* [LCD-09352](https://www.sparkfun.com/products/9352)- SparkFun Graphic LCD Serial Backpack
+
+Version History
+---------------
+
 
 License Information
 -------------------
-The hardware is released under [Creative Commons Share-alike 3.0](http://creativecommons.org/licenses/by-sa/3.0/).  
-All other code is open source so please feel free to do anything you want with it; you buy me a beer if you use this and we meet someday ([Beerware license](http://en.wikipedia.org/wiki/Beerware)).
+
+This product is _**open source**_! 
+
+The **code** is beerware; if you see me (or any other SparkFun employee) at the local, and you've found our code helpful, please buy us a round!
+
+Please use, reuse, and modify these files as you see fit. Please maintain attribution to SparkFun Electronics and release anything derivative under the same license.
+
+Distributed as-is; no warranty is given.
+
+- Your friends at SparkFun.
+
+
