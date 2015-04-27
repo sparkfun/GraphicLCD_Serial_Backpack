@@ -6,8 +6,8 @@ SparkFun Electronics
 
 **********************************************/
 #include "Arduino.h"
-#include "SerialGraphicLCD.h"
-#include <SoftwareSerial.h>
+#include "SparkFunSerialGraphicLCD.h"
+#include "SoftwareSerial.h"
 
 //initialize an instance of the SoftwareSerial library 
 SoftwareSerial serial(2,3);//change these two pin values to whichever pins you wish to use (RX, TX)
