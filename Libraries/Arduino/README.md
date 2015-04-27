@@ -26,8 +26,6 @@ Products that use this Library
 
 * [LCD-09352](https://www.sparkfun.com/products/9352)- SparkFun Graphic LCD Serial Backpack
 
-Version History
----------------
 
 
 License Information

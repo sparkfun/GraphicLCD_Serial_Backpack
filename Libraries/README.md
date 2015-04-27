@@ -21,10 +21,12 @@ Distributed as-is; no warranty is given.
 
 
 
+Library Update Instructions:
+----------------------------
 
-BUILD INSTRUCTIONS: 
+You must run the following commands to get the most up-to-date version of the library available. 
 
-$git subtree add -P <DIRECTORY NAME> --squash <git repo URL> <ref>
+$git subtree add -P Libraries/Arduino --squash https://github.com/sparkfun/SparkFun_Graphic_LCD_Serial_Backpack_Arduino_Library.git master
 
-$git subtree pull -P <DIRECTORY NAME> --squash <git repo URL> <ref>
+$git subtree pull -P Libraries/Arduino --squash https://github.com/sparkfun/SparkFun_Graphic_LCD_Serial_Backpack_Arduino_Library.git master
 

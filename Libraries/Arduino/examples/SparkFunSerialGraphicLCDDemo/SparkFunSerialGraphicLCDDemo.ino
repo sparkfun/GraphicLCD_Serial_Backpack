@@ -33,7 +33,7 @@ __________________
 
 ***********************************************************/
 
-#include <SerialGraphicLCD.h>//inculde the Serial Graphic LCD library
+#include <SparkFunSerialGraphicLCD.h>//inculde the Serial Graphic LCD library
 #include <SoftwareSerial.h>
 //Despite this being inculdeing in the library file, 
 //it needs to be added here as well to get the sketch to compile
