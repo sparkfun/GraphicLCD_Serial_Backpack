@@ -1,6 +1,6 @@
 Graphic LCD Serial Backpack
 ============================
-[![Graphic LCD Serial Backpack](https://dlnmh9ip6v2uc.cloudfront.net//images/products/9/3/5/2/09352-01.jpg)
+[![Graphic LCD Serial Backpack](https://cdn.sparkfun.com/assets/parts/2/9/2/2/09352-01.jpg)
 *Graphic LCD Serial Backpack(LCD-09352)*](https://www.sparkfun.com/products/9352)
 
 The Graphic LCD Serial Backpack interfaces to either the [160x128 pixel Huge Graphic LCD](https://www.sparkfun.com/products/8799) or
